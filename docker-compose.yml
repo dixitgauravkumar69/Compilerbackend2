@@ -1,0 +1,9 @@
+services:
+  compiler-app:
+    build: .
+    container_name: pod-demo-container
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./temp_codes:/app/codes # Aapke laptop ka folder container se connect ho jayega
+    restart: always

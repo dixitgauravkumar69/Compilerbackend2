@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <style>
+        /* PDF rendering ke liye CSS basics */
+        @page { size: A4; margin: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Arial', sans-serif; background-color: white; padding: 30px; color: #333; line-height: 1.4; }
+
+        .resume-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+        }
+
+        /* Table layout grid se zyada stable hota hai PDF ke liye */
+        .header-table {
+            width: 100%;
+            border-bottom: 2px solid #0091ca;
+            padding-bottom: 15px;
+            margin-bottom: 10px;
+            border-collapse: collapse;
+        }
+
+        .header-text h1 { color: #0091ca; font-size: 26px; text-transform: uppercase; margin-bottom: 5px; }
+        .header-text p { font-size: 13px; color: #555; margin-bottom: 2px; }
+        .links { font-weight: bold; color: #0091ca; font-size: 12px; margin-top: 5px; }
+
+        .profile-photo-box {
+            width: 110px;
+            height: 130px;
+            border: 1px solid #ddd;
+            background: #eee;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 11px;
+            color: #888;
+        }
+
+        .section-header {
+            background-color: #0091ca;
+            color: white;
+            padding: 7px 12px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+
+        .content { padding: 0 5px; font-size: 13px; }
+
+        .edu-table { width: 100%; border-collapse: collapse; font-weight: bold; }
+        .sub-text { color: #555; margin-bottom: 5px; font-size: 13px; }
+
+        a { color: #0091ca; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<div class="resume-container">
+
+    <table class="header-table">
+        <tr>
+            <td class="header-text">
+                <h1>{{name}}</h1>
+                <p><strong>{{bio}}</strong></p>
+                <p>{{email}} | {{phone}}</p>
+                <div class="links">
+                    LinkedIn: {{linkedin}} | GitHub: {{github}}
+                </div>
+            </td>
+            <td style="width: 120px; text-align: right;">
+                <div class="profile-photo-box">
+                    PHOTO
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <div class="section-header">Brief Summary</div>
+    <div class="content">
+        <p>{{summary}}</p>
+    </div>
+
+    <div class="section-header">Education</div>
+    <div class="content">
+        <table class="edu-table">
+            <tr>
+                <td>{{college}}</td>
+            </tr>
+        </table>
+        <p class="sub-text">{{branch}}</p>
+        <p><strong>CGPA:</strong> {{cgpa}}</p>
+    </div>
+
+    <div class="section-header">Key Expertise / Skills</div>
+    <div class="content">
+        <p>{{skills}}</p>
+    </div>
+
+    <div class="section-header">Projects</div>
+    <div class="content">
+        <p>{{projects}}</p>
+    </div>
+
+    <div class="section-header">Internships</div>
+    <div class="content">
+        <p>{{internships}}</p>
+    </div>
+
+    <div class="section-header">Awards &amp; Achievements</div>
+    <div class="content">
+        <p>{{achievements}}</p>
+    </div>
+
+</div>
+
+</body>
+</html>
