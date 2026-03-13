@@ -15,7 +15,7 @@ public class CoreConfig {
             public void addCorsMappings(CorsRegistry registry) {
 
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:4200","https://compilerbackend2.onrender.com")
+                        .allowedOrigins("http://localhost:4200","https://compiler-testcase.vercel.app")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         // "Authorization" header ko specifically allow karna zaroori hai
                         .allowedHeaders("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin")
