@@ -1,6 +1,7 @@
 package com.example.POD.Controller;
 
 import com.example.POD.DTO.CodeDTO;
+import com.example.POD.DTO.ResponseCodeExecution;
 import com.example.POD.Entity.ProblemStatement;
 import com.example.POD.Entity.TestCaseEntity;
 import com.example.POD.Repository.ProblemStatementRepo;
@@ -36,7 +37,7 @@ public class CodeController {
 
 
     @PostMapping("/runTestCases")
-    public String runTestCases(@RequestBody CodeDTO request) throws Exception {
+    public ResponseCodeExecution runTestCases(@RequestBody CodeDTO request) throws Exception {
         return codeService.runWithTestCases(request.getCode(),request.getLanguage(),request.getProblemId());
     }
 }

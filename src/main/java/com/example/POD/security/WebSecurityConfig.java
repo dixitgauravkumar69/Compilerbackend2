@@ -56,6 +56,8 @@ public class WebSecurityConfig {
                         //  TEACHER APIs
                         .requestMatchers("/api/teacher/**").hasAnyRole("TEACHER","ADMIN")
 
+                        .requestMatchers("/api/code/**").hasAnyRole("TEACHER","ADMIN","STUDENT")
+
                         //  STUDENT APIs
                         .requestMatchers("/api/student/**").hasAnyRole("STUDENT","TEACHER","ADMIN")
 

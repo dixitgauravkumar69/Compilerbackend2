@@ -1,6 +1,7 @@
 package com.example.POD.Service;
 
 import com.example.POD.DTO.Languages;
+import com.example.POD.DTO.ResponseCodeExecution;
 import com.example.POD.Entity.TestCaseEntity;
 import com.example.POD.Repository.TestCaseRepo;
 import lombok.RequiredArgsConstructor;
@@ -13,39 +14,47 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
-public class CodeService {
+public class CodeService { private final TestCaseRepo testCaseRepository;
 
-    private final TestCaseRepo testCaseRepository;
+    public ResponseCodeExecution runWithTestCases(String code, Languages language, Long problemId) throws Exception {
 
-    public String runWithTestCases(String code, Languages language, Long problemId) throws Exception {
+        ResponseCodeExecution response = new ResponseCodeExecution();
 
-        // 1. Setup paths and clean code
         String workingDir = System.getProperty("user.dir");
         String fileName = language.getFileName();
         File codeFile = getFile(code, workingDir, fileName);
 
+        List<String> resultList = new java.util.ArrayList<>();
+        int passCount = 0;
+
         try {
-            // 2. Compilation Phase
+
+            //  Compilation Phase
             if (language.getCompileCommand() != null) {
+
                 ProcessBuilder cb;
+
                 if (language.name().equalsIgnoreCase("CPP")) {
-                    // C++: g++ Main.cpp -o program
                     cb = new ProcessBuilder("g++", fileName, "-o", "program");
                 } else {
-                    // Java: javac Main.java
                     cb = new ProcessBuilder(language.getCompileCommand(), fileName);
                 }
 
                 cb.directory(new File(workingDir));
                 Process compile = cb.start();
+
                 String compileError = readStream(compile.getErrorStream());
                 compile.waitFor();
 
                 if (!compileError.isEmpty()) {
-                    return "Compilation Error:\n" + compileError;
+
+                    resultList.add("Compilation Error:\n" + compileError);
+
+                    response.setTestCases(resultList);
+                    response.setMarks(0);
+                    return response;
                 }
 
-                // CRITICAL FOR DOCKER/LINUX: Permission dena zaruri hai executable ko
                 if (language.name().equalsIgnoreCase("CPP")) {
                     new ProcessBuilder("chmod", "+x", "program")
                             .directory(new File(workingDir))
@@ -54,17 +63,19 @@ public class CodeService {
                 }
             }
 
-            // 3. Fetch Testcases
+            //  Fetch Testcases
             List<TestCaseEntity> testCases = testCaseRepository.getTestCasesByProblemId(problemId);
+
             if (testCases.isEmpty()) {
-                return "No testcases found for this problem.";
+                resultList.add("No testcases found");
+                response.setTestCases(resultList);
+                response.setMarks(0);
+                return response;
             }
 
-            StringBuilder result = new StringBuilder();
-            int passCount = 0;
-
-            // 4. Execution Phase
+            //  Execution Phase
             for (int i = 0; i < testCases.size(); i++) {
+
                 TestCaseEntity tc = testCases.get(i);
                 ProcessBuilder rb;
 
@@ -72,17 +83,15 @@ public class CodeService {
                     rb = new ProcessBuilder("python3", fileName);
                 } else if (language.name().equalsIgnoreCase("CPP")) {
                     rb = new ProcessBuilder("./program");
-                } else if (language.name().equalsIgnoreCase("JAVA")) {
+                } else {
                     String className = fileName.replace(".java", "");
                     rb = new ProcessBuilder("java", className);
-                } else {
-                    rb = new ProcessBuilder(language.getRunCommand());
                 }
 
                 rb.directory(new File(workingDir));
                 Process run = rb.start();
 
-                // Standard Input handling
+                //  Input dena
                 try (BufferedWriter inputWriter = new BufferedWriter(
                         new OutputStreamWriter(run.getOutputStream(), StandardCharsets.UTF_8))) {
                     inputWriter.write(tc.getInputData());
@@ -90,11 +99,12 @@ public class CodeService {
                     inputWriter.flush();
                 }
 
-                // Timeout Protection (5 seconds)
+                //  Timeout
                 boolean finished = run.waitFor(5, TimeUnit.SECONDS);
+
                 if (!finished) {
                     run.destroyForcibly();
-                    result.append("Test Case ").append(i + 1).append(": Time Limit Exceeded\n");
+                    resultList.add("Test Case " + (i + 1) + ": TLE");
                     continue;
                 }
 
@@ -102,37 +112,39 @@ public class CodeService {
                 String runtimeError = readStream(run.getErrorStream()).trim();
 
                 if (!runtimeError.isEmpty()) {
-                    result.append("Test Case ").append(i + 1).append(": Runtime Error (").append(runtimeError).append(")\n");
+                    resultList.add("Test Case " + (i + 1) + ": Runtime Error");
                     continue;
                 }
 
-                // Comparison Logic (Normalize spaces)
                 String expected = tc.getExpectedOutput().trim().replaceAll("\\s+", " ");
                 String actual = actualOutput.replaceAll("\\s+", " ");
 
                 if (expected.equals(actual)) {
                     passCount++;
-                    result.append("Test Case ").append(i + 1).append(": Passed\n");
+                    resultList.add("Test Case " + (i + 1) + ": Passed");
                 } else {
-                    result.append("Test Case ").append(i + 1)
-                            .append(": Failed (Expected: [").append(expected)
-                            .append("], Got: [").append(actual).append("])\n");
+                    resultList.add("Test Case " + (i + 1) +
+                            ": Failed (Expected: " + expected + ", Got: " + actual + ")");
                 }
             }
 
-            result.append("\nFinal Score: ").append(passCount).append("/").append(testCases.size());
-            return result.toString();
+            //  Final Response
+            response.setTestCases(resultList);
+            response.setMarks(passCount);
+
+            return response;
 
         } finally {
-            // 5. Always Cleanup
+
+            //  Cleanup
             if (codeFile.exists()) codeFile.delete();
             new File(workingDir, "program").delete();
+
             if (language.name().equalsIgnoreCase("JAVA")) {
                 new File(workingDir, fileName.replace(".java", ".class")).delete();
             }
         }
     }
-
     /**
      * Extracts code to a file and cleans non-breaking spaces
      */
