@@ -7,15 +7,13 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; // Commented logic ke liye zaroori hai
-import org.springframework.security.crypto.password.NoOpPasswordEncoder; // Plain text ke liye
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-
-
+@EnableMethodSecurity
 public class WebSecurityConfig {
 
     @Bean
@@ -28,33 +26,45 @@ public class WebSecurityConfig {
         return authConfig.getAuthenticationManager();
     }
 
-    /*
-    // Purana BCrypt wala logic (Matching encoded passwords)
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-    */
-
-    // Naya Plain Text wala logic (Testing ke liye)
+    // Testing ke liye
     @Bean
     public PasswordEncoder passwordEncoder() {
         return NoOpPasswordEncoder.getInstance();
     }
 
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http.csrf(csrf -> csrf.disable())
-                // IS LINE KO ADD KAREIN: Ye batata hai ki WebMvcConfigurer (CoreConfig) ki settings use karo
+
                 .cors(cors -> cors.configure(http))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/auth/**", "/api/User/**").permitAll()
-                                .anyRequest().authenticated()
+
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                .authorizeHttpRequests(auth -> auth
+
+                        //  LOGIN + SIGNUP OPEN
+                        .requestMatchers(
+                                "/api/User/login",
+                                "/api/User/addUser"
+                        ).permitAll()
+
+                        //  ADMIN APIs
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                        //  TEACHER APIs
+                        .requestMatchers("/api/teacher/**").hasAnyRole("TEACHER","ADMIN")
+
+                        //  STUDENT APIs
+                        .requestMatchers("/api/student/**").hasAnyRole("STUDENT","TEACHER","ADMIN")
+
+                        .anyRequest().authenticated()
                 );
 
-        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(authenticationJwtTokenFilter(),
+                UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 }

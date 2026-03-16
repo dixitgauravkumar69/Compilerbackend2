@@ -43,17 +43,31 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody UserLoginDTO userLoginDTO) {
-        // 1. Authenticate user
+
+        //  1. Authenticate user (email + password verify)
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userLoginDTO.getUserEmail(), userLoginDTO.getPassword()));
+                new UsernamePasswordAuthenticationToken(
+                        userLoginDTO.getUserEmail(),
+                        userLoginDTO.getPassword()
+                )
+        );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // 2. Generate Token
-        String jwt = jwtUtils.generateJwtToken(userLoginDTO.getUserEmail());
-
+        //  2. DB se user fetch karo
         UserEntity user = userRepo.findByUserEmail(userLoginDTO.getUserEmail());
-        // 3. Return Token and Email
+
+        if(user == null){
+            return ResponseEntity.status(404).body("User Not Found");
+        }
+
+        //  3. JWT generate karo (ROLE DB se lo)
+        String jwt = jwtUtils.generateJwtToken(
+                user.getUserEmail(),
+                user.getUserRole()
+        );
+
+        //  4. Response
         return ResponseEntity.ok(new JwtEntity(
                 jwt,
                 "Bearer",
@@ -62,9 +76,7 @@ public class UserController {
                 user.getUserid(),
                 user.getUserRole()
         ));
-
     }
-
     @GetMapping("/getProblemStatements")
     public List<ProblemStatement> getProblemStatements()
     {

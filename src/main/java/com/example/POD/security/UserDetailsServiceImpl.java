@@ -14,6 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import java.util.List;
+
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
@@ -23,14 +26,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        // 1. Database se user dhoondh rha hai
+
         UserEntity user = userRepository.findByUserEmail(email);
 
-        // 2. Spring Security ke compatible User object mein convert karna
         return new org.springframework.security.core.userdetails.User(
                 user.getUserEmail(),
                 user.getPassword(),
-                new ArrayList<>()
+                List.of(new SimpleGrantedAuthority("ROLE_" + user.getUserRole()))
         );
     }
 }
