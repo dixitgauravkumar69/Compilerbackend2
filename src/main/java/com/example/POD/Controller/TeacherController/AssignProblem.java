@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", maxAge = 3600)
+
 @RequestMapping("/teacher")
 public class AssignProblem {
     private final UserService userService;
