@@ -99,7 +99,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/User/**").hasAnyRole("STUDENT","TEACHER","ADMIN")
                         .requestMatchers("/api/faculty/**").hasAnyRole("TEACHER","ADMIN")
                         .requestMatchers("/api/student/**").hasAnyRole("STUDENT","TEACHER","ADMIN")
-                        .requestMatchers("/placement/**").hasAnyRole("TEACHER","ADMIN")
+                        .requestMatchers("/placement/**").hasAnyRole("STUDENT","TEACHER","ADMIN")
                         .requestMatchers("/api/code/**").hasAnyRole("TEACHER","STUDENT","ADMIN")
 
                         .anyRequest().authenticated()

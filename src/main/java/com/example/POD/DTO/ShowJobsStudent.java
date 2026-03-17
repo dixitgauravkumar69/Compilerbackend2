@@ -15,7 +15,7 @@ public class ShowJobsStudent {
     private String jobType;
 
     private String industry;
-
+    private String salaryPackage;
     private String location;
 
     private LocalDate registrationLastDate;
