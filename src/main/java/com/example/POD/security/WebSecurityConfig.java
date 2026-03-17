@@ -80,7 +80,7 @@ public class WebSecurityConfig {
 
                         //  STUDENT APIs
                         .requestMatchers("/api/student/**").hasAnyRole("STUDENT","TEACHER","ADMIN")
-
+                        .requestMatchers("/student/**").hasAnyRole("STUDENT","ADMIN")
                         .anyRequest().authenticated()
                 );
 
