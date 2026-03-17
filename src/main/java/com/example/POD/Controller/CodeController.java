@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/code")
-@CrossOrigin(origins = "http://localhost:4200") // allow Angular app
+
 @RequiredArgsConstructor
 public class CodeController {
 

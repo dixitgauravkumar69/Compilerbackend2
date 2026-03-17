@@ -47,7 +47,8 @@ public class WebSecurityConfig {
                         //  LOGIN + SIGNUP OPEN
                         .requestMatchers(
                                 "/api/User/login",
-                                "/api/User/addUser"
+                                "/api/User/addUser",
+                                "/api/code/runTestCases"
                         ).permitAll()
 
                         //  ADMIN APIs
@@ -56,7 +57,7 @@ public class WebSecurityConfig {
                         //  TEACHER APIs
                         .requestMatchers("/api/teacher/**").hasAnyRole("TEACHER","ADMIN")
 
-                        .requestMatchers("/api/code/**").hasAnyRole("TEACHER","ADMIN","STUDENT")
+//                        .requestMatchers("/api/code/**").hasAnyRole("TEACHER","ADMIN","STUDENT")
 
                         //  STUDENT APIs
                         .requestMatchers("/api/student/**").hasAnyRole("STUDENT","TEACHER","ADMIN")
