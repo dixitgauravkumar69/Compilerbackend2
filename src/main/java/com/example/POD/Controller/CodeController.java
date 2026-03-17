@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/code")
-
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RequiredArgsConstructor
 public class CodeController {
 
