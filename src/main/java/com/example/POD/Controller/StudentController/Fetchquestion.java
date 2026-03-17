@@ -3,6 +3,7 @@ package com.example.POD.Controller.StudentController;
 import com.example.POD.Entity.ProblemStatement;
 import com.example.POD.Repository.ProblemStatementRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,12 +18,17 @@ import java.util.List;
 public class Fetchquestion {
 
     private final ProblemStatementRepo problemStatementRepo;
+
+    @GetMapping("/health")
+    public ResponseEntity<?> health()
+    {
+       return ResponseEntity.ok("server is done");
+    }
+
     @GetMapping("/getQuestions")
     public List<ProblemStatement> getQuestions()
     {
        List<ProblemStatement> mess= problemStatementRepo.findByAssignedTrue();
-
-
        return mess;
     }
 }

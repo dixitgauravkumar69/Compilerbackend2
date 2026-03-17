@@ -44,7 +44,9 @@ public class WebSecurityConfig {
         // Origins specify karein (Wildcard '*' use nahi karna agar credentials true hain)
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:4200",
-                "https://compiler-testcase.vercel.app"
+                "http://localhost:4201",
+                "https://compiler-testcase.vercel.app",
+                "https://exam-portal-smart-seat-frontend.vercel.app"
         ));
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
@@ -55,7 +57,8 @@ public class WebSecurityConfig {
                 "Content-Type",
                 "X-Requested-With",
                 "Accept",
-                "Origin"
+                "Origin",
+                "X-Bypass-DB"
         ));
 
         // Credentials ko allow karein (Cookies/Auth Headers ke liye)
@@ -63,6 +66,7 @@ public class WebSecurityConfig {
 
         // Frontend ko Authorization header read karne dein
         configuration.setExposedHeaders(Arrays.asList("Authorization"));
+        configuration.setExposedHeaders(Arrays.asList("X-Bypass-DB"));
 
         // Pre-flight request cache karne ke liye
         configuration.setMaxAge(3600L);
@@ -89,6 +93,7 @@ public class WebSecurityConfig {
                         .requestMatchers(
                                 "/api/User/login",
                                 "/api/User/addUser",
+                                "/api/student/health",//for server active status
                                 "/api/code/runTestCases"
                         ).permitAll()
 
