@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -26,12 +27,15 @@ public class CodeService {
     public ResponseCodeExecution runWithTestCases(String code, Languages language, Long problemId) throws Exception {
         ResponseCodeExecution response = new ResponseCodeExecution();
 
-        // Render/Linux ke liye /tmp sabse safe directory hai execution ke liye
-        String workingDir = "/tmp";
-        // Unique prefix taaki multiple users ka code clash na kare
+        // 1. Har request ke liye alag folder ban rh  hai (/tmp/uuid)
         String uniqueId = UUID.randomUUID().toString();
-        String fileName = uniqueId + "_" + language.getFileName();
-        String executableName = uniqueId + "_program";
+        Path requestDirPath = Paths.get("/tmp", uniqueId);
+        Files.createDirectories(requestDirPath);
+        String workingDir = requestDirPath.toString();
+
+        // 2. Java ke liye file ka naam hamesha 'Main.java' hi hoga jo ki save hoga
+        String fileName = language.name().equalsIgnoreCase("JAVA") ? "Main.java" : language.getFileName();
+        String executableName = "program"; // C++ ke liye simple name
 
         File codeFile = getFile(code, workingDir, fileName);
         List<String> resultList = new ArrayList<>();
@@ -61,7 +65,6 @@ public class CodeService {
                     return response;
                 }
 
-                // C++ executable ko permissions dena
                 if (language.name().equalsIgnoreCase("CPP")) {
                     new ProcessBuilder("chmod", "+x", workingDir + "/" + executableName).start().waitFor();
                 }
@@ -81,12 +84,12 @@ public class CodeService {
                 ProcessBuilder rb;
 
                 if (language.name().equalsIgnoreCase("PYTHON")) {
-                    rb = new ProcessBuilder("python3", workingDir + "/" + fileName);
+                    rb = new ProcessBuilder("python3", fileName);
                 } else if (language.name().equalsIgnoreCase("CPP")) {
-                    rb = new ProcessBuilder(workingDir + "/" + executableName);
+                    rb = new ProcessBuilder("./" + executableName);
                 } else if (language.name().equalsIgnoreCase("JAVA")) {
-                    String className = fileName.replace(".java", "");
-                    rb = new ProcessBuilder("java", "-cp", workingDir, className);
+                    // Yahan fix: Hamesha 'Main' class run hogi
+                    rb = new ProcessBuilder("java", "Main");
                 } else {
                     rb = new ProcessBuilder("./" + executableName);
                 }
@@ -132,13 +135,12 @@ public class CodeService {
             return response;
 
         } finally {
-            // Cleanup: Use try-catch to ignore errors if files don't exist
+            // Cleanup: Poora request folder delete kar dein
             try {
-                Files.deleteIfExists(Paths.get(workingDir, fileName));
-                Files.deleteIfExists(Paths.get(workingDir, executableName));
-                if (language.name().equalsIgnoreCase("JAVA")) {
-                    Files.deleteIfExists(Paths.get(workingDir, fileName.replace(".java", ".class")));
-                }
+                Files.walk(requestDirPath)
+                        .sorted(Comparator.reverseOrder())
+                        .map(Path::toFile)
+                        .forEach(File::delete);
             } catch (Exception ignored) {}
         }
     }
