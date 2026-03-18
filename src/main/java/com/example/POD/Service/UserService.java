@@ -21,7 +21,7 @@ public class UserService {
     private final ProblemStatementRepo problemStatementRepo;
     private final ProfileRepository profileRepo;
 
-    public UserDTO addUser(UserDTO user) {
+    public UserEntity addUser(UserDTO user) {
         UserEntity userEntity = new UserEntity();
 
 
@@ -33,7 +33,7 @@ public class UserService {
 
         userRepository.save(userEntity);
 
-        return user;
+        return userEntity;
     }
 
     public UserDTO loginUser(UserLoginDTO userLoginDTO) {

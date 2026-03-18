@@ -37,14 +37,14 @@ public class UserController {
     @Autowired JwtUtils jwtUtils;
 
     @PostMapping("/addUser")
-    public UserDTO addUser(@RequestBody UserDTO user) {
+    public UserEntity addUser(@RequestBody UserDTO user) {
         //  Pehle user ko database mein save krunga
-        UserDTO createdUser = userService.addUser(user);
+        UserEntity createdUser = userService.addUser(user);
 
 
         if (createdUser != null && createdUser.getUserEmail() != null) {
             // Mail ke liye rukenge nhi vo background me jata rhega
-            emailService.sendWelcomeEmail(createdUser.getUserEmail(), createdUser.getUserName());
+            emailService.sendWelcomeEmail(createdUser.getUserEmail(), createdUser.getUsername());
         }
 
         return createdUser;
