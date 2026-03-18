@@ -46,7 +46,7 @@ public class WebSecurityConfig {
                 "http://localhost:4200",
                 "http://localhost:4201",
                 "https://compiler-testcase.vercel.app",
-                "https://exam-portal-smart-seat-frontend.vercel.app"
+                "https://exam-portal-smart-seat-frontend.vercel.app/"
         ));
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
