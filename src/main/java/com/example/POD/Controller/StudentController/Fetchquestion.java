@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 
-@RequestMapping("/student")
+@RequestMapping("api/student")
 public class Fetchquestion {
 
     private final ProblemStatementRepo problemStatementRepo;
