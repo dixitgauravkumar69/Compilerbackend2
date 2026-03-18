@@ -65,8 +65,7 @@ public class WebSecurityConfig {
         configuration.setAllowCredentials(true);
 
         // Frontend ko Authorization header read karne dein
-        configuration.setExposedHeaders(Arrays.asList("Authorization"));
-        configuration.setExposedHeaders(Arrays.asList("X-Bypass-DB"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "X-Bypass-DB", "Content-Type", "Accept"));
 
         // Pre-flight request cache karne ke liye
         configuration.setMaxAge(3600L);
