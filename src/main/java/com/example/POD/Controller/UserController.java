@@ -6,6 +6,7 @@ import com.example.POD.DTO.UserLoginDTO;
 import com.example.POD.Entity.ProblemStatement;
 import com.example.POD.Entity.UserEntity;
 import com.example.POD.Repository.UserRepository;
+import com.example.POD.Service.EmailService;
 import com.example.POD.Service.UserService;
 import com.example.POD.security.JwtUtils;
 import lombok.RequiredArgsConstructor;
@@ -29,19 +30,25 @@ public class UserController {
 
     private final UserService userService;
     private final UserRepository userRepo;
-
+   private final EmailService emailService;
 
     @Autowired
     AuthenticationManager authenticationManager;
     @Autowired JwtUtils jwtUtils;
 
     @PostMapping("/addUser")
-    public UserDTO addUser(@RequestBody UserDTO user)
-    {
-       UserDTO createdUser= userService.addUser(user);
-       return createdUser;
-    }
+    public UserDTO addUser(@RequestBody UserDTO user) {
+        //  Pehle user ko database mein save krunga
+        UserDTO createdUser = userService.addUser(user);
 
+
+        if (createdUser != null && createdUser.getUserEmail() != null) {
+            // Mail ke liye rukenge nhi vo background me jata rhega
+            emailService.sendWelcomeEmail(createdUser.getUserEmail(), createdUser.getUserName());
+        }
+
+        return createdUser;
+    }
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody UserLoginDTO userLoginDTO) {
 
