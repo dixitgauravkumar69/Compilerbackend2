@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import sendinblue.ApiClient;
+import sendinblue.ApiException;
 import sendinblue.Configuration;
 import sendinblue.auth.ApiKeyAuth;
 import sibApi.TransactionalEmailsApi;
@@ -94,8 +95,12 @@ public class EmailService {
             apiInstance.sendTransacEmail(sendSmtpEmail);
             System.out.println("Welcome Email sent successfully!");
 
-        } catch (Exception e) {
-            System.err.println("Welcome Mail Error: " + e.getMessage());
+        }catch (ApiException e) {
+            System.err.println("Brevo API Error Code: " + e.getCode());
+            System.err.println("Brevo API Response Body: " + e.getResponseBody());
+            e.printStackTrace();
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
     }
 
