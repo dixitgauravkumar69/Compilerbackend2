@@ -2,6 +2,7 @@ package com.example.POD.Entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.time.LocalDateTime;
 
 
 @Getter
@@ -24,4 +25,13 @@ public class ProblemStatement {
 
     @Column(name="Assigned")
     private Boolean assigned;
+
+    @Column(name="StartTime")
+    private LocalDateTime startTime;
+
+    @Column(name="EndTime")
+    private LocalDateTime endTime;
+
+    @Column(name="IsLive")
+    private Boolean isLive;
 }
