@@ -9,6 +9,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Slf4j // 2. Isse 'log' object mil jayega
@@ -18,27 +21,32 @@ public class LiveService {
     private final ProblemStatementRepo problemStatementRepo;
 
     public ProblemStatement problemLive(LiveDTO liveDTO, Long problemId) {
-        LocalDateTime startTime = liveDTO.getStartTime();
-        LocalDateTime endTime = liveDTO.getEndTime();
+
+        //  Convert IST → UTC
+        ZonedDateTime startIST = liveDTO.getStartTime().atZone(ZoneId.of("Asia/Kolkata"));
+        ZonedDateTime endIST = liveDTO.getEndTime().atZone(ZoneId.of("Asia/Kolkata"));
+
+        LocalDateTime startTimeUTC = startIST.withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime();
+        LocalDateTime endTimeUTC = endIST.withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime();
 
         ProblemStatement problemForLive = problemStatementRepo.findById(problemId)
                 .orElseThrow(() -> {
-                    log.error("Problem with ID {} not found in database", problemId); // Error log
+                    log.error("Problem with ID {} not found in database", problemId);
                     return new RuntimeException("Problem not found with id: " + problemId);
                 });
 
-        problemForLive.setStartTime(startTime);
-        problemForLive.setEndTime(endTime);
+        problemForLive.setStartTime(startTimeUTC);
+        problemForLive.setEndTime(endTimeUTC);
         problemForLive.setIsLive(false);
 
-        log.info("Set timing for Problem ID {}: Start={}, End={}", problemId, startTime, endTime);
+        log.info("Set timing for Problem ID {} (UTC): Start={}, End={}", problemId, startTimeUTC, endTimeUTC);
 
         return problemStatementRepo.save(problemForLive);
     }
 
     @Scheduled(fixedRate = 60000)
     public void manageProblemLifecycle() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         log.info(">>> Lifecycle Scheduler Running at: {}", now);
 
         //Get all problems in allProblems list.....
