@@ -41,6 +41,7 @@ public class LiveService {
         LocalDateTime now = LocalDateTime.now();
         log.info(">>> Lifecycle Scheduler Running at: {}", now);
 
+        //Get all problems in allProblems list.....
         List<ProblemStatement> allProblems = problemStatementRepo.findAll();
 
         for (ProblemStatement problem : allProblems) {
