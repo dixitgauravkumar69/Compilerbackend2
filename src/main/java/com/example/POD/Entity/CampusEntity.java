@@ -31,7 +31,9 @@ public class CampusEntity {
 
     private String salaryPackage;
 
-    private String eligibility;
+    private String eligibleBranch;
+
+    private  String cgpa;
 
     private String bond;
 

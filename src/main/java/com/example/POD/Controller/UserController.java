@@ -62,7 +62,7 @@ public class UserController {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        //  2. DB se user fetch karo
+        //  2. DB se user fetch kia
         UserEntity user = userRepo.findByUserEmail(userLoginDTO.getUserEmail());
 
         if(user == null){
@@ -75,6 +75,7 @@ public class UserController {
                 user.getUserRole()
         );
 
+
         //  4. Response
         return ResponseEntity.ok(new JwtEntity(
                 jwt,
@@ -83,6 +84,7 @@ public class UserController {
                 user.getUsername(),
                 user.getUserid(),
                 user.getUserRole()
+
         ));
     }
 

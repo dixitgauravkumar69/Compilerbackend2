@@ -21,6 +21,7 @@ public class UserService {
     private final ProblemStatementRepo problemStatementRepo;
     private final ProfileRepository profileRepo;
 
+
     public UserEntity addUser(UserDTO user) {
         UserEntity userEntity = new UserEntity();
 
@@ -42,6 +43,7 @@ public class UserService {
         if (userEntity == null) {
             return null;
         }
+      int SEM=profileRepo.findByUserUserid(userEntity.getUserid()).getSemester();
 
         if (userEntity.getPassword().equals(userLoginDTO.getPassword())) {
             UserDTO userDTO = new UserDTO();
@@ -51,7 +53,7 @@ public class UserService {
             userDTO.setUserEmail(userEntity.getUserEmail());
             userDTO.setUserRole(userEntity.getUserRole());
             userDTO.setPassword(userEntity.getPassword());
-
+            userDTO.setSemester(SEM);
             return userDTO;
         } else {
             return null;

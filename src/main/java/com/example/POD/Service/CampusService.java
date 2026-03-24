@@ -14,6 +14,7 @@ public class CampusService {
     public CampusEntity addJob(CampusEntity campus)
     {
         campus.setCreatedAt(LocalDateTime.now());
+        campus.setEligibleBranch(campus.getEligibleBranch());
         campusRepository.save(campus);
         return campus;
 
