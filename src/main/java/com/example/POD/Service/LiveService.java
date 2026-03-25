@@ -38,6 +38,7 @@ public class LiveService {
         problemForLive.setStartTime(startTimeUTC);
         problemForLive.setEndTime(endTimeUTC);
         problemForLive.setIsLive(false);
+        problemForLive.setSemester(liveDTO.getSemester());
 
         log.info("Set timing for Problem ID {} (UTC): Start={}, End={}", problemId, startTimeUTC, endTimeUTC);
 

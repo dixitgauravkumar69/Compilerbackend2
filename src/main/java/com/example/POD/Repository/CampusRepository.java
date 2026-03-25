@@ -34,4 +34,6 @@ FROM CampusEntity c
 WHERE c.id = :id
 """)
     Jobdescription getJobDescription(Long id);
+
+
 }

@@ -34,4 +34,7 @@ public class ProblemStatement {
 
     @Column(name="IsLive")
     private Boolean isLive;
+
+    @Column(name="Semester")
+    private Integer semester;
 }

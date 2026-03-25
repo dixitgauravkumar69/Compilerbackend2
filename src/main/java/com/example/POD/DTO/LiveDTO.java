@@ -10,6 +10,6 @@ public class LiveDTO {
 
    private LocalDateTime startTime;
    private LocalDateTime endTime;
-
+   private Integer semester;
 
 }
