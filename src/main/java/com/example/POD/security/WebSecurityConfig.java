@@ -47,7 +47,7 @@ public class WebSecurityConfig {
                 "https://compiler-testcase.vercel.app"
         ));
 
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT","PATCH","DELETE", "OPTIONS"));
 
         // Saare required headers jo CoreConfig mein the
         configuration.setAllowedHeaders(Arrays.asList(

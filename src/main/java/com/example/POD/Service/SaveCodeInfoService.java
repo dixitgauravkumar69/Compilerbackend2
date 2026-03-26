@@ -9,6 +9,8 @@ import com.example.POD.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class SaveCodeInfoService {
@@ -17,23 +19,31 @@ public class SaveCodeInfoService {
     private final UserRepository userRepository;
     private final ProblemStatementRepo problemRepository;
 
-    public String addStudentResponse(StudentsCodeReport studentsCodeReport,Long userId,Long problemId) {
+    public String addStudentResponse(StudentsCodeReport studentsCodeReport, Long userId, Long problemId) {
 
+        // 1. Check if the report already exists
+        Optional<StudentsCodeReport> existingReport = repo.findByUserUseridAndProblemId(userId, problemId);
 
-        System.out.println(userId);
-        // fetch actual entities
+        if (existingReport.isPresent()) {
+            // OVERWRITE LOGIC: Purani ID naye report object mein set kar do
+            studentsCodeReport.setId(existingReport.get().getId());
+            System.out.println("Updating existing report for User: " + userId);
+        } else {
+            System.out.println("Creating new report for User: " + userId);
+        }
+
+        // 2. Fetch actual entities
         UserEntity user = userRepository.findByuserid(userId);
-
         ProblemStatement problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new RuntimeException("Problem not found"));
 
-        // set nested entities
+        // 3. Set nested entities
         studentsCodeReport.setUser(user);
         studentsCodeReport.setProblem(problem);
 
-        // save report
+        // 4. Save (If ID exists, it updates. If ID is null, it inserts.)
         repo.save(studentsCodeReport);
 
-        return "Information saved successfully.....";
+        return existingReport.isPresent() ? "Response updated successfully!" : "Information saved successfully!";
     }
 }
