@@ -39,12 +39,22 @@ public class ResumeService {
         resume.setSkills(userProfileExtra.getSkills());
         resume.setGithub(userProfileExtra.getGithub());
         resume.setLinkedin(userProfileExtra.getLinkedin());
+        resume.setImg(userProfileExtra.getImg());
+
+//        resume.setSemester(resume.getSemester());
 
         resume.setProjects(resumeDTO.getProjects());
         resume.setInternships(resumeDTO.getInternships());
         resume.setBio(resumeDTO.getBio());
         resume.setSummary(resumeDTO.getSummary());
         resume.setAchievements(resumeDTO.getAchievements());
+        resume.setHighSchool(resumeDTO.getHighSchool());
+        resume.setHighSchoolMarks(resumeDTO.getHighSchoolMarks());
+        resume.setHigherSecondary(resumeDTO.getHigherSecondary());
+
+
+
+        resume.setHigherSecondaryMarks(resumeDTO.getHigherSecondaryMarks());
 
         return resumeRepository.save(resume);
     }
@@ -62,6 +72,7 @@ public class ResumeService {
         html = html.replace("{{name}}", escapeXml(resume.getName()));
         html = html.replace("{{email}}", escapeXml(resume.getEmail()));
         html = html.replace("{{phone}}", escapeXml(resume.getPhone()));
+        html = html.replace("{{img}}", escapeXml(resume.getImg()));
         html = html.replace("{{bio}}", escapeXml(resume.getBio()));
         html = html.replace("{{summary}}", escapeXml(resume.getSummary()));
 
@@ -76,6 +87,13 @@ public class ResumeService {
         html = html.replace("{{projects}}", escapeXml(resume.getProjects()));
         html = html.replace("{{internships}}", escapeXml(resume.getInternships()));
         html = html.replace("{{achievements}}", escapeXml(resume.getAchievements()));
+        html = html.replace("{{highSchool}}", escapeXml(resume.getHighSchool()));
+        html = html.replace("{{highSchoolMarks}}", escapeXml(resume.getHighSchoolMarks()));
+        html = html.replace("{{higherSecondary}}", escapeXml(resume.getHigherSecondary()));
+        html = html.replace("{{higherSecondaryMarks}}", escapeXml(resume.getHigherSecondaryMarks()));
+        html = html.replace("{{semester}}", escapeXml(resume.getSemester()));
+
+
 
         return html;
     }

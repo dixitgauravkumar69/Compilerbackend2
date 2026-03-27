@@ -31,6 +31,16 @@ public class Profile {
 
     private String bio;
 
+    private String highSchool;
+    private String highSchoolMarks;
+    private String higherSecondary;
+    private String higherSecondaryMarks;
+
+
+    //For uploading and storing image....
+    private String img;
+
+
     // Join with User Table
     @OneToOne
     @JoinColumn(name = "user_id")

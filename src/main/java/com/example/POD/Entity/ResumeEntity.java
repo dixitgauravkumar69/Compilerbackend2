@@ -34,19 +34,34 @@ public class ResumeEntity {
     @Column(nullable = false)
     private String linkedin;
 
-    @Column(nullable=false)
+    @Column(nullable=false,columnDefinition = "TEXT")
     private String projects;
 
-    @Column(nullable = false)
+    @Column(nullable = false,columnDefinition = "TEXT")
     private String internships;
 
-    @Column(nullable = false)
+    @Column(nullable = false,columnDefinition = "TEXT")
     private String achievements;
     @Column(nullable=false)
     private String bio;
 
-    @Column(nullable=false)
+    @Column(nullable=false,columnDefinition = "TEXT")
     private String summary;
+
+
+    private String highSchool;
+
+
+    private String highSchoolMarks;
+
+
+    private String higherSecondary;
+
+
+    private String higherSecondaryMarks;
+    private String semester; // futuristic not working yet ......
+
+    private String img;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

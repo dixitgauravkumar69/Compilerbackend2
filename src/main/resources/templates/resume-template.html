@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <style>
-        /* PDF rendering ke liye CSS basics */
+        /* PDF rendering basics */
         @page { size: A4; margin: 0; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Arial', sans-serif; background-color: white; padding: 30px; color: #333; line-height: 1.4; }
@@ -14,7 +14,6 @@
             background: white;
         }
 
-        /* Table layout grid se zyada stable hota hai PDF ke liye */
         .header-table {
             width: 100%;
             border-bottom: 2px solid #0091ca;
@@ -27,15 +26,21 @@
         .header-text p { font-size: 13px; color: #555; margin-bottom: 2px; }
         .links { font-weight: bold; color: #0091ca; font-size: 12px; margin-top: 5px; }
 
+        /* --- FIXED PHOTO CSS --- */
         .profile-photo-box {
-            width: 110px;
-            height: 130px;
+            width: 100px; /* Fixed Width */
+            height: 110px; /* Fixed Height */
             border: 1px solid #ddd;
             background: #eee;
-            text-align: center;
-            vertical-align: middle;
-            font-size: 11px;
-            color: #888;
+            overflow: hidden; /* Image bahar nahi jayegi */
+            display: inline-block; /* Container ko size maintain karne dega */
+        }
+
+        .profile-photo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Professional crop: face center mein rahega */
+            display: block;
         }
 
         .section-header {
@@ -51,9 +56,15 @@
 
         .content { padding: 0 5px; font-size: 13px; }
 
-        .edu-table { width: 100%; border-collapse: collapse; font-weight: bold; }
-        .sub-text { color: #555; margin-bottom: 5px; font-size: 13px; }
-
+        .edu-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+        .edu-table td { padding: 4px 0; vertical-align: top; }
+        .edu-title { font-weight: bold; font-size: 14px; color: #333; }
+        .edu-meta { text-align: right; font-weight: bold; color: #0091ca; }
+        .sub-text { color: #555; font-size: 12px; margin-bottom: 8px; font-style: italic; }
         a { color: #0091ca; text-decoration: none; }
     </style>
 </head>
@@ -63,57 +74,57 @@
 
     <table class="header-table">
         <tr>
-            <td class="header-text">
+            <td class="header-text" style="vertical-align: middle;">
                 <h1>{{name}}</h1>
-                <p><strong>{{bio}}</strong></p>
                 <p>{{email}} | {{phone}}</p>
                 <div class="links">
                     LinkedIn: {{linkedin}} | GitHub: {{github}}
                 </div>
             </td>
-            <td style="width: 120px; text-align: right;">
+            <td style="width: 120px; text-align: right; vertical-align: top;">
                 <div class="profile-photo-box">
-                    PHOTO
+                    <img src="{{img}}" alt="Profile Photo" onerror="this.style.display='none';"/>
                 </div>
             </td>
         </tr>
     </table>
 
     <div class="section-header">Brief Summary</div>
-    <div class="content">
-        <p>{{summary}}</p>
-    </div>
+    <div class="content"><p>{{summary}}</p></div>
 
     <div class="section-header">Education</div>
     <div class="content">
         <table class="edu-table">
             <tr>
-                <td>{{college}}</td>
+                <td class="edu-title">{{college}}</td>
+                <td class="edu-meta">CGPA: {{cgpa}}</td>
             </tr>
         </table>
-        <p class="sub-text">{{branch}}</p>
-        <p><strong>CGPA:</strong> {{cgpa}}</p>
+        <table class="edu-table">
+            <tr>
+                <td class="edu-title">{{higherSecondary}} (12th)</td>
+                <td class="edu-meta">{{higherSecondaryMarks}}</td>
+            </tr>
+        </table>
+        <table class="edu-table">
+            <tr>
+                <td class="edu-title">{{highSchool}} (10th)</td>
+                <td class="edu-meta">{{highSchoolMarks}}</td>
+            </tr>
+        </table>
     </div>
 
     <div class="section-header">Key Expertise / Skills</div>
-    <div class="content">
-        <p>{{skills}}</p>
-    </div>
+    <div class="content"><p>{{skills}}</p></div>
 
     <div class="section-header">Projects</div>
-    <div class="content">
-        <p>{{projects}}</p>
-    </div>
+    <div class="content"><p>{{projects}}</p></div>
 
     <div class="section-header">Internships</div>
-    <div class="content">
-        <p>{{internships}}</p>
-    </div>
+    <div class="content"><p>{{internships}}</p></div>
 
     <div class="section-header">Awards &amp; Achievements</div>
-    <div class="content">
-        <p>{{achievements}}</p>
-    </div>
+    <div class="content"><p>{{achievements}}</p></div>
 
 </div>
 
