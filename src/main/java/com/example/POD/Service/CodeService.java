@@ -27,15 +27,13 @@ public class CodeService {
     public ResponseCodeExecution runWithTestCases(String code, Languages language, Long problemId) throws Exception {
         ResponseCodeExecution response = new ResponseCodeExecution();
 
-        // 1. Har request ke liye alag folder ban rh  hai (/tmp/uuid)
         String uniqueId = UUID.randomUUID().toString();
         Path requestDirPath = Paths.get("/tmp", uniqueId);
         Files.createDirectories(requestDirPath);
         String workingDir = requestDirPath.toString();
 
-        // 2. Java ke liye file ka naam hamesha 'Main.java' hi hoga jo ki save hoga
         String fileName = language.name().equalsIgnoreCase("JAVA") ? "Main.java" : language.getFileName();
-        String executableName = "program"; // C++ ke liye simple name
+        String executableName = "program";
 
         File codeFile = getFile(code, workingDir, fileName);
         List<String> resultList = new ArrayList<>();
@@ -70,6 +68,39 @@ public class CodeService {
                 }
             }
 
+            // --- Complexity Analysis Phase in which we can calculate complexity of code ---
+
+//            String complexityResult = "O(n)";
+//            try {
+//                String scriptPath;
+//                File renderScript = new File("/app/analyzer.py");
+//                if (renderScript.exists()) {
+//                    scriptPath = "/app/analyzer.py";
+//                } else {
+//                    scriptPath = new File("src/main/resources/analyzer.py").getAbsolutePath();
+//                }
+//
+//                ProcessBuilder apb = new ProcessBuilder("python3", scriptPath, workingDir + "/" + fileName, language.name());
+//                apb.directory(new File(workingDir));
+//                Process ap = apb.start();
+//
+//                try (BufferedReader reader = new BufferedReader(new InputStreamReader(ap.getInputStream()))) {
+//                    String line = reader.readLine();
+//                    if (line != null && !line.isEmpty()) {
+//                        complexityResult = line.trim();
+//                    }
+//                }
+//                ap.waitFor();
+//            } catch (Exception e) {
+//                System.out.println("Complexity Error: " + e.getMessage());
+//            }
+//            response.setComplexity(complexityResult);
+//
+
+
+
+
+
             // --- Fetch Testcases ---
             List<TestCaseEntity> testCases = testCaseRepository.getTestCasesByProblemId(problemId);
             if (testCases.isEmpty()) {
@@ -88,7 +119,6 @@ public class CodeService {
                 } else if (language.name().equalsIgnoreCase("CPP")) {
                     rb = new ProcessBuilder("./" + executableName);
                 } else if (language.name().equalsIgnoreCase("JAVA")) {
-                    // Yahan fix: Hamesha 'Main' class run hogi
                     rb = new ProcessBuilder("java", "Main");
                 } else {
                     rb = new ProcessBuilder("./" + executableName);
@@ -97,7 +127,6 @@ public class CodeService {
                 rb.directory(new File(workingDir));
                 Process run = rb.start();
 
-                // Input bhejiyo
                 try (BufferedWriter inputWriter = new BufferedWriter(
                         new OutputStreamWriter(run.getOutputStream(), StandardCharsets.UTF_8))) {
                     inputWriter.write(tc.getInputData());
@@ -135,7 +164,6 @@ public class CodeService {
             return response;
 
         } finally {
-            // Cleanup: Poora request folder delete kar dein
             try {
                 Files.walk(requestDirPath)
                         .sorted(Comparator.reverseOrder())

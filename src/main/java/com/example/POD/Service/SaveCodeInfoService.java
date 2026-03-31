@@ -44,6 +44,11 @@ public class SaveCodeInfoService {
         // 4. Save (If ID exists, it updates. If ID is null, it inserts.)
         repo.save(studentsCodeReport);
 
-        return existingReport.isPresent() ? "Response updated successfully!" : "Information saved successfully!";
+
+        int tmpM=studentsCodeReport.getMarks();// debugging line ..............
+
+
+
+        return existingReport.isPresent() ? "Response updated successfully!" : "Information saved successfully!"+ tmpM;
     }
 }
