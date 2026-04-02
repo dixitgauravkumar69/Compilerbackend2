@@ -9,36 +9,24 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor
 
+
 public class Jobdescription {
+
     private Long id;
-
     private String company;
-
     private String title;
-
     private String jobType;
 
-    private String industry;
 
     private String location;
-
     private Integer semester;
-
-    private String salaryPackage;
-
+    private Long salaryPackage;
     private String eligibleBranch;
-
-    private  String cgpa;
-
-    private String bond;
-
+    private String cgpa;
+    private Long bond;
     private String skillsRequired;
-
     private String jobDescription;
-
     private String selectionProcess;
-
     private LocalDate registrationLastDate;
-
-   private String allocate;
+    private String allocate;
 }

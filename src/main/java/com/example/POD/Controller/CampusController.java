@@ -17,6 +17,10 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+
 @RestController
 
 @RequiredArgsConstructor
@@ -25,6 +29,7 @@ public class CampusController {
 
     private final CampusService campusService;
     private final CampusRepository campusRepository;
+
     @Autowired
     private Cloudinary  cloudinary; //  inject Cloudinary
 
@@ -65,11 +70,11 @@ public class CampusController {
 
         return campusService.addJob(campus);
     }
-    @GetMapping("/getJobInfo/{semester}")
-    public List<ShowJobsStudent> getJobInfo(@PathVariable Integer semester)
+    @GetMapping("/getJobInfo/{semester}/{branch}")
+    public List<ShowJobsStudent> getJobInfo(@PathVariable Integer semester,@PathVariable String branch)
     {
-
-        List<CampusEntity> jobs = campusRepository.findBySemester(semester);
+      // Some conditions can be added according to requirements of user......
+        List<CampusEntity> jobs = campusRepository.findBySemesterAndEligibleBranch(semester,branch);
 
         return jobs.stream().map(job -> {
 
@@ -79,7 +84,7 @@ public class CampusController {
             dto.setCompany(job.getCompany());
             dto.setTitle(job.getTitle());
             dto.setJobType(job.getJobType());
-            dto.setIndustry(job.getIndustry());
+
             dto.setLocation(job.getLocation());
             dto.setSalaryPackage(job.getSalaryPackage());
             dto.setRegistrationLastDate(job.getRegistrationLastDate());
@@ -95,6 +100,21 @@ public class CampusController {
     @GetMapping("/student/job/{id}")
     public Jobdescription getJobDescription(@PathVariable Long id){
         return campusRepository.getJobDescription(id);
+    }
+
+
+
+    @DeleteMapping("/deleteJob/{CampusId}")
+    public ResponseEntity<String> deleteJob(@PathVariable Long CampusId) {
+
+        if (!campusRepository.existsById(CampusId)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Campus not found with ID: " + CampusId);
+        }
+
+        campusRepository.deleteById(CampusId);
+
+        return ResponseEntity.ok("Deleted Campus of " + CampusId);
     }
 
 }

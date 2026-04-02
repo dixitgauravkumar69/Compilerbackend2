@@ -13,12 +13,13 @@ public class ProblemStatementService {
 
     private final ProblemStatementRepo psRepo;
 
-    public String addStatement(String Statement,String title)
+    public String addStatement(String Statement,String title,String level)
     {
         ProblemStatement psEntity=new ProblemStatement();
         psEntity.setProblemStatement(Statement);
         psEntity.setAssigned(false);
         psEntity.setTitle(title);
+        psEntity.setLevel(level);
         psRepo.save(psEntity);
 
         return "Problem saved with ID:"+ psEntity.getId();

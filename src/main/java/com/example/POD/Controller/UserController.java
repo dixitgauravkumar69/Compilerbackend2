@@ -51,41 +51,45 @@ public class UserController {
     }
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody UserLoginDTO userLoginDTO) {
+        try {
+            // 1. Authenticate (email + password)
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            userLoginDTO.getUserEmail(),
+                            userLoginDTO.getPassword()
+                    )
+            );
 
-        //  1. Authenticate user (email + password verify)
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        userLoginDTO.getUserEmail(),
-                        userLoginDTO.getPassword()
-                )
-        );
+            // 2. Set authentication
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+            // 3. Fetch user from DB
+            UserEntity user = userRepo.findByUserEmail(userLoginDTO.getUserEmail());
 
-        //  2. DB se user fetch kia
-        UserEntity user = userRepo.findByUserEmail(userLoginDTO.getUserEmail());
+            if (user == null) {
+                return ResponseEntity.status(404).body("User Not Found");
+            }
 
-        if(user == null){
-            return ResponseEntity.status(404).body("User Not Found");
+            // 4. Generate JWT
+            String jwt = jwtUtils.generateJwtToken(
+                    user.getUserEmail(),
+                    user.getUserRole()
+            );
+
+            // 5. Return response
+            return ResponseEntity.ok(new JwtEntity(
+                    jwt,
+                    "Bearer",
+                    user.getUserEmail(),
+                    user.getUsername(),
+                    user.getUserid(),
+                    user.getUserRole()
+            ));
+
+        } catch (Exception e) {
+
+            return ResponseEntity.status(401).body("Invalid Email or Password");
         }
-
-        //  3. JWT generate karo (ROLE DB se lo)
-        String jwt = jwtUtils.generateJwtToken(
-                user.getUserEmail(),
-                user.getUserRole()
-        );
-
-
-        //  4. Response
-        return ResponseEntity.ok(new JwtEntity(
-                jwt,
-                "Bearer",
-                user.getUserEmail(),
-                user.getUsername(),
-                user.getUserid(),
-                user.getUserRole()
-
-        ));
     }
 
 

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -24,6 +25,18 @@ public class GetLiveStreamTest {
 
         Profile profile=profileRepository.findByUserUserid(userId);
 
-        return problemStatementRepo.findByIsLiveTrueAndSemester(profile.getSemester());
+        List<ProblemStatement>challenges;
+        List<ProblemStatement>challenges2;
+
+             challenges=  problemStatementRepo.findByIsLiveTrueAndSemester(0);
+
+        challenges2= problemStatementRepo.findByIsLiveTrueAndSemester(profile.getSemester());
+
+        List<ProblemStatement> finalList = new ArrayList<>();
+        finalList.addAll(challenges);
+        finalList.addAll(challenges2);
+
+        return finalList;
+
     }
 }

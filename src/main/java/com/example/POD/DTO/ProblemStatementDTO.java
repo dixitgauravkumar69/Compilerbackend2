@@ -8,4 +8,5 @@ public class ProblemStatementDTO {
 
     private String title;
     private  String statement;
+    private String level;
 }

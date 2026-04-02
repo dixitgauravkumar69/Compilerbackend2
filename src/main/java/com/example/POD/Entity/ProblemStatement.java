@@ -32,6 +32,9 @@ public class ProblemStatement {
     @Column(name="EndTime")
     private LocalDateTime endTime;
 
+    @Column(name="Level")
+    private String level;
+
     @Column(name="IsLive")
     private Boolean isLive;
 

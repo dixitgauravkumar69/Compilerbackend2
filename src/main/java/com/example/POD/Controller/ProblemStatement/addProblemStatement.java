@@ -15,7 +15,7 @@ public class addProblemStatement {
     @PostMapping("/addProblemStatement")
     public String add(@RequestBody ProblemStatementDTO problem)
     {
-        String Condition=psService.addStatement(problem.getStatement(), problem.getTitle());
+        String Condition=psService.addStatement(problem.getStatement(), problem.getTitle(),problem.getLevel());
         return Condition;
     }
 

@@ -38,7 +38,12 @@ public class LiveService {
         problemForLive.setStartTime(startTimeUTC);
         problemForLive.setEndTime(endTimeUTC);
         problemForLive.setIsLive(false);
+
+
+        // yhi pe kr skte hai all ke liye ki check krke sbse phle semester ek specific hai matlb koi ank set kr lunga vo hai to another type se add kr lo
+
         problemForLive.setSemester(liveDTO.getSemester());
+
 
         log.info("Set timing for Problem ID {} (UTC): Start={}, End={}", problemId, startTimeUTC, endTimeUTC);
 

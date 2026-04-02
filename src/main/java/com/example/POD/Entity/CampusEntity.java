@@ -23,19 +23,23 @@ public class CampusEntity {
 
     private String jobType;
 
-    private String industry;
+
 
     private String location;
 
     private Integer semester;
 
-    private String salaryPackage;
+
 
     private String eligibleBranch;
 
     private  String cgpa;
 
-    private String bond;
+
+    private Long salaryPackage;
+    private Long bond;
+
+
 
     @Column(length = 2000)
     private String skillsRequired;

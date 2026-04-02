@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface CampusRepository extends JpaRepository<CampusEntity,Long> {
-    List<CampusEntity> findBySemester(Integer Semester);
+    List<CampusEntity> findBySemesterAndEligibleBranch(Integer Semester,String branch);
 
     @Query("""
 SELECT new com.example.POD.DTO.Jobdescription(
@@ -17,7 +17,6 @@ c.id,
 c.company,
 c.title,
 c.jobType,
-c.industry,
 c.location,
 c.semester,
 c.salaryPackage,

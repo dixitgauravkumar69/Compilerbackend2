@@ -13,6 +13,7 @@ public interface ProblemStatementRepo extends JpaRepository <ProblemStatement,Lo
 
     Page<ProblemStatement> findByAssignedTrue(Pageable pagable);
     List<ProblemStatement>findByIsLiveTrueAndSemester(Integer semester);
+    List<ProblemStatement>findByIsLiveTrue();
 
 
 }
