@@ -20,6 +20,7 @@ public class AssignProblem {
     private final SaveCodeResponseRepo saveCodeResponseRepo;
 
 
+    @org.springframework.cache.annotation.CacheEvict(value = {"allProblemStatementsCache", "assignedProblemsQuery"}, allEntries = true)
     @GetMapping("/assignProblem/{problemId}")
     public String assignProblem(@PathVariable Long problemId)
     {
@@ -28,6 +29,7 @@ public class AssignProblem {
     }
 
     // delete Problem statement by the teacher request......
+    @org.springframework.cache.annotation.CacheEvict(value = {"allProblemStatementsCache", "assignedProblemsQuery", "testCaseCache", "problemStudentsCache"}, allEntries = true)
     @DeleteMapping("/deleteProblem/{id}")
     public String deleteProblem(@PathVariable Long id)
     {
@@ -44,6 +46,7 @@ public class AssignProblem {
      return Problem;
   }
 
+  @org.springframework.cache.annotation.CacheEvict(value = {"allProblemStatementsCache", "assignedProblemsQuery"}, allEntries = true)
   @PatchMapping("/updateProblem/{problemId}")
     public String updateProblem(@PathVariable Long problemId, @RequestBody ProblemStatement updatedData )
   {
@@ -65,8 +68,6 @@ public class AssignProblem {
       {
           existingProblem.setSemester(updatedData.getSemester());
       }
-
-  // Yha pe future me edit test cases ka logic likhunga ,........
 
       problemStatementRepo.save(existingProblem);
       return ("Problem Updated Successfully!");
