@@ -1,6 +1,6 @@
 package com.example.POD.Service;
 
-import com.example.POD.DTO.AppliedStudentsDTO;
+
 import com.example.POD.Entity.PlacementApplicationData;
 import com.example.POD.Repository.PlacementApplicationRepo;
 import lombok.RequiredArgsConstructor;

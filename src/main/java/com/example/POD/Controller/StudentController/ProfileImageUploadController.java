@@ -3,7 +3,7 @@ package com.example.POD.Controller.StudentController;
 import com.example.POD.Entity.Profile;
 import com.example.POD.Repository.ProfileRepository;
 import com.example.POD.Service.UploadImageService;
-import jakarta.mail.Multipart;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

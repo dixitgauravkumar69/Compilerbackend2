@@ -1,6 +1,6 @@
 package com.example.POD.Controller.TeacherController;
 
-import com.example.POD.DTO.AppliedStudentsDTO;
+
 import com.example.POD.Entity.PlacementApplicationData;
 import com.example.POD.Service.AppliedStudentsService;
 import lombok.RequiredArgsConstructor;

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 public class StudentProfile {
     private final UserService userService;
     private final ProfileRepository profileRepository;
+    @org.springframework.cache.annotation.CacheEvict(value = "studentProfileCache", key = "#userId")
     @PostMapping("/addProfile/{userId}")
     public ResponseEntity<?> addProfile(@RequestBody Profile profile, @PathVariable Long userId)
     {

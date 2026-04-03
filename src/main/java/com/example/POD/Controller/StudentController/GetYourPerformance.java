@@ -18,6 +18,6 @@ public class GetYourPerformance {
     @GetMapping("/getYourPerformance/{studentId}")
     public List<StudentsCodeReport> getYourPerformance(@PathVariable Long studentId)
     {
-       return saveCodeResponseRepo.findByUserUserid(studentId);
+       return saveCodeResponseRepo.findByUserWithProblem(studentId);
     }
 }

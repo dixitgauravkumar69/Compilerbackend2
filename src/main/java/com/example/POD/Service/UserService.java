@@ -77,13 +77,14 @@ public class UserService {
         return "Assigned successfully";
     }
 
+    @org.springframework.cache.annotation.CacheEvict(value = "studentProfileCache", key = "#userId")
     public ResponseEntity<?> addStudentProfile(Profile profile,Long userId)
     {
 
-
-
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        UserEntity user = userRepository.findByuserid(userId);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
 
         profile.setUser(user);
 

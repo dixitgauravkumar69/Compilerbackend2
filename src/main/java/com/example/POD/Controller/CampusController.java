@@ -34,6 +34,7 @@ public class CampusController {
     private Cloudinary  cloudinary; //  inject Cloudinary
 
 
+    @org.springframework.cache.annotation.CacheEvict(value = {"jobsCache", "allCompaniesCache"}, allEntries = true)
     @PostMapping(value="/addJob", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public CampusEntity addJob(
             @RequestPart("job") CampusEntity campus,

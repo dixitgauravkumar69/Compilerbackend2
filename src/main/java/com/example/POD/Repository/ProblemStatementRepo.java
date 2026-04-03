@@ -11,9 +11,27 @@ import java.util.List;
 public interface ProblemStatementRepo extends JpaRepository <ProblemStatement,Long>{
 
 
+    @Override
+    @org.springframework.cache.annotation.Cacheable(value = "allProblemStatementsCache")
+    List<ProblemStatement> findAll();
+
     Page<ProblemStatement> findByAssignedTrue(Pageable pagable);
     List<ProblemStatement>findByIsLiveTrueAndSemester(Integer semester);
     List<ProblemStatement>findByIsLiveTrue();
 
 
+
+    @Query("SELECT p FROM ProblemStatement p WHERE p.isLive = false AND p.startTime <= CURRENT_TIMESTAMP")
+    List<ProblemStatement> findProblemsToActivate();
+
+    @Query("SELECT p FROM ProblemStatement p WHERE p.isLive = true AND p.endTime <= CURRENT_TIMESTAMP")
+    List<ProblemStatement> findProblemsToDeactivate();
+
+    @org.springframework.cache.annotation.Cacheable(value = "assignedProblemsQuery", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
+    @Query("SELECT p FROM ProblemStatement p WHERE p.assigned = true ")
+    Page<ProblemStatement> findActiveAssignedProblems(Pageable pageable);
+
+    @Query("SELECT p FROM ProblemStatement p WHERE p.assigned = true ")
+    org.springframework.data.domain.Slice<com.example.POD.DTO.ProblemStatementListDTO> findActiveAssignedProblemsOptimized(Pageable pageable);
 }
+

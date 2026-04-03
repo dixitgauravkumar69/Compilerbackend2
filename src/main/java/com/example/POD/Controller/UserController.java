@@ -16,11 +16,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -64,8 +65,17 @@ public class UserController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             // 3. Fetch user from DB
-            UserEntity user = userRepo.findByUserEmail(userLoginDTO.getUserEmail());
+            Object principal = authentication.getPrincipal();
 
+            String email;
+
+            if (principal instanceof UserDetails) {
+                email = ((UserDetails) principal).getUsername();
+            } else {
+                email = principal.toString();
+            }
+
+            UserEntity user = userRepo.findByUserEmail(email);
             if (user == null) {
                 return ResponseEntity.status(404).body("User Not Found");
             }
@@ -100,6 +110,7 @@ public class UserController {
        return ps;
     }
 
+    @org.springframework.cache.annotation.Cacheable(value = "profileEndpointCache")
     @GetMapping("/profile")
     public UserEntity getProfile(@RequestParam String email)
     {

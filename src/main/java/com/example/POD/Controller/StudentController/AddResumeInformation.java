@@ -4,7 +4,7 @@ import com.example.POD.DTO.ResumeDTO;
 import com.example.POD.Entity.ResumeEntity;
 import com.example.POD.Service.ResumeService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.web.bind.annotation.*;
 
 @RestController

@@ -1,6 +1,6 @@
 package com.example.POD.DTO;
 
-import jakarta.persistence.Column;
+
 import lombok.Getter;
 import lombok.Setter;
 
