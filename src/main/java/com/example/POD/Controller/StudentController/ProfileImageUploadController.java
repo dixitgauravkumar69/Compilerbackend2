@@ -19,6 +19,7 @@ public class ProfileImageUploadController {
     private final UploadImageService imageService;
     private final ProfileRepository profileRepository;
     @PostMapping("/uploadImg/{userId}")
+    @org.springframework.cache.annotation.CacheEvict(value = "studentProfileCache", key = "#userId")
     public ResponseEntity<?>uploadImage(@PathVariable Long userId, @RequestParam("file")MultipartFile file)
     {
         try {

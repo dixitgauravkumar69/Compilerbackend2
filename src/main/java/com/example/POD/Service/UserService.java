@@ -22,6 +22,7 @@ public class UserService {
     private final ProfileRepository profileRepo;
 
 
+    @org.springframework.cache.annotation.CacheEvict(value = "usersCache", key = "#user.userEmail")
     public UserEntity addUser(UserDTO user) {
         UserEntity userEntity = new UserEntity();
 
@@ -65,6 +66,7 @@ public class UserService {
         return problemStatementRepo.findAll();
     }
 
+    @org.springframework.cache.annotation.CacheEvict(value = {"allProblemStatementsCache", "assignedProblemsQuery"}, allEntries = true)
     public String assignProblemStatement(Long problemId) {
         ProblemStatement problem = problemStatementRepo
                 .findById(problemId)

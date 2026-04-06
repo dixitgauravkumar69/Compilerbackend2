@@ -21,6 +21,7 @@ public class ResumeService {
     private final UserRepository userRepository;
     private final ResumeRepository resumeRepository;
 
+    @org.springframework.cache.annotation.CacheEvict(value = "resumeCache", key = "#userId")
     public ResumeEntity addResumeInfo(ResumeDTO resumeDTO, Long userId) {
 
         UserEntity userBasicInfo = userRepository.findByuserid(userId);
