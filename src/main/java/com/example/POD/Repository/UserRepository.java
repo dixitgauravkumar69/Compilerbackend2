@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface  UserRepository extends JpaRepository<UserEntity,Long> {
 
- @org.springframework.cache.annotation.Cacheable(value = "usersCache", key = "#email")
+ @org.springframework.cache.annotation.Cacheable(value = "usersCache", key = "#email", unless = "#result == null")
  @org.springframework.data.jpa.repository.Query("SELECT u FROM UserEntity u WHERE u.userEmail = :email")
  UserEntity findByUserEmail(@org.springframework.data.repository.query.Param("email") String email);
  
