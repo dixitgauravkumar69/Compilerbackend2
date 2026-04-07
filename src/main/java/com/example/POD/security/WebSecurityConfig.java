@@ -88,7 +88,8 @@ public class WebSecurityConfig {
 
                         .requestMatchers(
                                 "/api/User/login",
-                                "/api/User/addUser"
+                                "/api/User/addUser",
+                                "/api/User/verifyOtpAndRegister"
 
                         ).permitAll()
 

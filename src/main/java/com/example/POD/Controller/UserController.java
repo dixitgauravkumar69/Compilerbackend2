@@ -70,6 +70,9 @@ public class UserController {
         // OTP valid hai ab db me save kr lunga
         UserEntity createdUser = userService.addUser(user);
 
+        //After saving user delete this otp
+        otpService.deleteOtp(createdUser.getUserEmail());
+
         return ResponseEntity.ok(createdUser);
     }
 

@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
         public boolean validateOtp(String email, String userOtp) {
             String storedOtp = (String) redisTemplate.opsForValue().get(email);
 
+            System.out.println("Stored Otp is :"+ storedOtp);
             if (storedOtp == null) {
                 return false; // expired or not exist
             }
