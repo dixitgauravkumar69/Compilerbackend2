@@ -24,6 +24,7 @@ public class PlacementApplicationService {
     private final ProfileRepository profileRepository;
     private final CampusRepository campusRepository;
 
+    @org.springframework.cache.annotation.CacheEvict(value = {"userPlacementCache", "appliedStudentsCache"}, allEntries = true)
     public String PlacementdataService(Long userId, Long campusid) {
 
         // 🔹 USER CHECK

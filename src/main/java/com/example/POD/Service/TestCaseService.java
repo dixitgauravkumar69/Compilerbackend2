@@ -21,6 +21,7 @@ public class TestCaseService {
 
     private final TestCaseRepo testCaseRepo;
 
+    @org.springframework.cache.annotation.CacheEvict(value = "testCaseCache", key = "#problem.id")
     public TestCaseEntity addTestCase(ProblemStatement problem, String input, String output) {
         TestCaseEntity testCase = new TestCaseEntity();
         testCase.setProblem(problem);
@@ -41,6 +42,7 @@ public class TestCaseService {
     }
 
 
+    @org.springframework.cache.annotation.CacheEvict(value = "testCaseCache", key = "#pId")
     public ResponseEntity<?> editTestCase(Long pId, TestCaseDTO testCaseDTO) {
         List<TestCaseEntity> testCases = testCaseRepo.getTestCasesByProblemId(pId);
 
@@ -67,6 +69,7 @@ public class TestCaseService {
     }
 
 
+    @org.springframework.cache.annotation.CacheEvict(value = "testCaseCache", allEntries = true)
     public String deleteTestCase(Long tId)
     {
         Optional<TestCaseEntity> testcase= testCaseRepo.findById(tId);

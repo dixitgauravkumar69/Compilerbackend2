@@ -2,6 +2,8 @@ package com.example.POD.Entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 
@@ -10,7 +12,11 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "ProblemStatement")
-public class ProblemStatement {
+public class ProblemStatement implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

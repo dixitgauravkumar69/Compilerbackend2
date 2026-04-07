@@ -22,7 +22,10 @@ public class UserService {
     private final ProfileRepository profileRepo;
 
 
-    @org.springframework.cache.annotation.CacheEvict(value = "usersCache", key = "#user.userEmail")
+    @org.springframework.cache.annotation.Caching(evict = {
+        @org.springframework.cache.annotation.CacheEvict(value = "usersCache", key = "#user.userEmail"),
+        @org.springframework.cache.annotation.CacheEvict(value = "profileEndpointCache", allEntries = true)
+    })
     public UserEntity addUser(UserDTO user) {
         UserEntity userEntity = new UserEntity();
 

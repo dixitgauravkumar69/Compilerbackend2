@@ -105,6 +105,7 @@ public class CampusController {
 
 
 
+    @org.springframework.cache.annotation.CacheEvict(value = {"jobsCache", "jobDescriptionCache", "allCompaniesCache"}, allEntries = true)
     @DeleteMapping("/deleteJob/{CampusId}")
     public ResponseEntity<String> deleteJob(@PathVariable Long CampusId) {
 

@@ -13,6 +13,7 @@ public class ProblemStatementService {
 
     private final ProblemStatementRepo psRepo;
 
+    @org.springframework.cache.annotation.CacheEvict(value = {"allProblemStatementsCache", "assignedProblemsQuery"}, allEntries = true)
     public String addStatement(String Statement,String title,String level)
     {
         ProblemStatement psEntity=new ProblemStatement();

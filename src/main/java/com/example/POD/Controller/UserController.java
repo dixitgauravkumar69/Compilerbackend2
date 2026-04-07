@@ -7,6 +7,7 @@ import com.example.POD.Entity.ProblemStatement;
 import com.example.POD.Entity.UserEntity;
 import com.example.POD.Repository.UserRepository;
 import com.example.POD.Service.EmailService;
+import com.example.POD.Service.OtpService;
 import com.example.POD.Service.UserService;
 import com.example.POD.security.JwtUtils;
 import lombok.RequiredArgsConstructor;
@@ -32,24 +33,50 @@ public class UserController {
     private final UserService userService;
     private final UserRepository userRepo;
    private final EmailService emailService;
+    private final OtpService otpService;
 
     @Autowired
     AuthenticationManager authenticationManager;
     @Autowired JwtUtils jwtUtils;
-
     @PostMapping("/addUser")
     public UserEntity addUser(@RequestBody UserDTO user) {
         //  Pehle user ko database mein save krunga
         UserEntity createdUser = userService.addUser(user);
 
+      //generate otp
+        String otp=otpService.generateOtp();
+
+        //Save this generated otp in radish template--> for 5 min..
+
+        if(createdUser.getUserEmail()!=null)
+        {
+            otpService.saveOtp(createdUser.getUserEmail(), otp);
+        }
 
         if (createdUser != null && createdUser.getUserEmail() != null) {
+
+
             // Mail ke liye rukenge nhi vo background me jata rhega
-            emailService.sendWelcomeEmail(createdUser.getUserEmail(), createdUser.getUsername());
+            emailService.sendWelcomeEmail(createdUser.getUserEmail(), createdUser.getUsername(),otp);
         }
 
         return createdUser;
     }
+
+
+    @PostMapping("/varifyOTP")
+    public Boolean OtpVarification(String email,String Otp)
+    {
+        boolean IsValidate=otpService.validateOtp(email,Otp);
+        if(!IsValidate)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody UserLoginDTO userLoginDTO) {
         try {
