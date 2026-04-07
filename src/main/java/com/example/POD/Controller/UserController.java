@@ -38,42 +38,39 @@ public class UserController {
     @Autowired
     AuthenticationManager authenticationManager;
     @Autowired JwtUtils jwtUtils;
+
     @PostMapping("/addUser")
-    public UserEntity addUser(@RequestBody UserDTO user) {
-        //  Pehle user ko database mein save krunga
-        UserEntity createdUser = userService.addUser(user);
-
-      //generate otp
-        String otp=otpService.generateOtp();
-
-        //Save this generated otp in radish template--> for 5 min..
-
-        if(createdUser.getUserEmail()!=null)
-        {
-            otpService.saveOtp(createdUser.getUserEmail(), otp);
+    public ResponseEntity<String> requestOtp(@RequestBody UserDTO user) {
+        // Check if user already exists
+        if(userRepo.findByUserEmail(user.getUserEmail()) != null) {
+            return ResponseEntity.status(409).body("User already exists");
         }
 
-        if (createdUser != null && createdUser.getUserEmail() != null) {
+        // Generate OTP
+        String otp = otpService.generateOtp();
 
+        // Save OTP in cache/service
+        otpService.saveOtp(user.getUserEmail(), otp);
 
-            // Mail ke liye rukenge nhi vo background me jata rhega
-            emailService.sendWelcomeEmail(createdUser.getUserEmail(), createdUser.getUsername(),otp);
-        }
+        // Send OTP email
+        emailService.sendWelcomeEmail(user.getUserEmail(), user.getUserName(), otp);
 
-        return createdUser;
+        return ResponseEntity.ok("OTP sent to email. Please verify to complete registration.");
     }
 
 
-    @PostMapping("/varifyOTP")
-    public Boolean OtpVarification(String email,String Otp)
-    {
-        boolean IsValidate=otpService.validateOtp(email,Otp);
-        if(!IsValidate)
-        {
-            return false;
+    @PostMapping("/verifyOtpAndRegister")
+    public ResponseEntity<?> verifyOtpAndRegister(@RequestBody UserDTO user, @RequestParam String otp) {
+        boolean isValid = otpService.validateOtp(user.getUserEmail(), otp);
+
+        if(!isValid) {
+            return ResponseEntity.status(400).body("Invalid OTP");
         }
 
-        return true;
+        // OTP valid hai ab db me save kr lunga
+        UserEntity createdUser = userService.addUser(user);
+
+        return ResponseEntity.ok(createdUser);
     }
 
 
