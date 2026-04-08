@@ -1,5 +1,6 @@
 package com.example.POD.Entity;
 
+// import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,6 +31,7 @@ public class UserEntity implements Serializable {
    @Column(name="Useremail",nullable=false)
     private String userEmail;
 
+   
    @Column(name="Password",nullable=false)
     private String password;
 }

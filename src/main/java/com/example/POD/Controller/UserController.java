@@ -1,5 +1,6 @@
 package com.example.POD.Controller;
 
+import com.example.POD.DTO.ChangePasswordDTO;
 import com.example.POD.DTO.JwtEntity;
 import com.example.POD.DTO.UserDTO;
 import com.example.POD.DTO.UserLoginDTO;
@@ -12,13 +13,16 @@ import com.example.POD.Service.UserService;
 import com.example.POD.security.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -35,10 +39,10 @@ public class UserController {
     private final UserRepository userRepo;
    private final EmailService emailService;
     private final OtpService otpService;
-
     @Autowired
     AuthenticationManager authenticationManager;
     @Autowired JwtUtils jwtUtils;
+    @Autowired  PasswordEncoder passwordEncoder;
 
     @PostMapping("/addUser")
     public ResponseEntity<String> requestOtp(@RequestBody UserDTO user) {
@@ -59,6 +63,16 @@ public class UserController {
         return ResponseEntity.ok("OTP sent to email. Please verify to complete registration.");
     }
 
+  @PatchMapping("/changePassword/{email}")
+     public ResponseEntity changePassword(@PathVariable String email,@RequestBody ChangePasswordDTO changePass)
+  {
+      if(userRepo.findByUserEmail(email)==null)
+             {
+                 return ResponseEntity.status(404).body("USer not found");
+             }
+      return userService.ChangePassword(email,changePass.getOldPassword(),changePass.getNewPassword());
+
+  }
 
     @PostMapping("/verifyOtpAndRegister")
     public ResponseEntity<?> verifyOtpAndRegister(@RequestBody UserDTO user, @RequestParam String otp) {
@@ -80,53 +94,65 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody UserLoginDTO userLoginDTO) {
+
         try {
-            // 1. Authenticate (email + password)
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            userLoginDTO.getUserEmail(),
-                            userLoginDTO.getPassword()
-                    )
-            );
+            //  1. Fetch user first
+            UserEntity user = userRepo.findByUserEmail(userLoginDTO.getUserEmail());
 
-            // 2. Set authentication
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            // 3. Fetch user from DB
-            Object principal = authentication.getPrincipal();
-
-            String email;
-
-            if (principal instanceof UserDetails) {
-                email = ((UserDetails) principal).getUsername();
-            } else {
-                email = principal.toString();
-            }
-
-            UserEntity user = userRepo.findByUserEmail(email);
             if (user == null) {
                 return ResponseEntity.status(404).body("User Not Found");
             }
+        
+            if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
+                return ResponseEntity.status(401).body("Password null of db");
+            }
 
-            // 4. Generate JWT
+//             String encodedPassword=passwordEncoder.encode(userLoginDTO.getPassword());
+            if (!passwordEncoder.matches(userLoginDTO.getPassword(), user.getPassword())) {
+                return ResponseEntity.status(401).body("Invalid Email or Password");
+            }
+
+            // 🔹 3. Authenticate manually (since we already validated)
+            // Safety check for role to avoid "Cannot pass null or empty values" error
+            String rawRole = (user.getUserRole() == null || user.getUserRole().trim().isEmpty()) ? "USER" : user.getUserRole();
+            
+            // Ensure "ROLE_" prefix is added only once
+            String roleWithPrefix = rawRole.startsWith("ROLE_") ? 
+                                    rawRole : "ROLE_" + rawRole;
+
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(
+                            user.getUserEmail(),
+                            null,
+                            List.of(new SimpleGrantedAuthority(roleWithPrefix))
+                    );
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            // 🔹 4. Generate JWT
+            // Safety check for email to avoid JWT constructor errors
+            if (user.getUserEmail() == null || user.getUserEmail().trim().isEmpty()) {
+                throw new IllegalStateException("User found but has no valid email in DB");
+            }
+
             String jwt = jwtUtils.generateJwtToken(
                     user.getUserEmail(),
-                    user.getUserRole()
+                    roleWithPrefix
             );
 
-            // 5. Return response
+            // 🔹 5. Return response
             return ResponseEntity.ok(new JwtEntity(
                     jwt,
                     "Bearer",
                     user.getUserEmail(),
                     user.getUsername(),
                     user.getUserid(),
-                    user.getUserRole()
+                    roleWithPrefix
             ));
 
         } catch (Exception e) {
-
-            return ResponseEntity.status(401).body("Invalid Email or Password"+ e.getMessage());
+            // Return actual error message temporarily for debugging
+            return ResponseEntity.status(401).body("Login failed: " + e.getMessage());
         }
     }
 

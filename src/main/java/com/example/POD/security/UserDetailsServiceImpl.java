@@ -27,11 +27,26 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
         UserEntity user = userRepository.findByUserEmail(email);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with email: " + email);
+        }
+
+        String rawEmail = (user.getUserEmail() == null) ? "" : user.getUserEmail();
+        String rawPassword = (user.getPassword()== null) ? "" : user.getPassword();
+        String rawRole = (user.getUserRole() == null || user.getUserRole().trim().isEmpty()) ? "USER" : user.getUserRole();
+        
+        // Ensure "ROLE_" prefix is added only once
+        String roleWithPrefix = rawRole.startsWith("ROLE_") ? rawRole : "ROLE_" + rawRole;
+        
+        // Safety check to avoid Spring Security's "Cannot pass null or empty values to constructor"
+        if (rawEmail.isEmpty() || rawPassword.isEmpty()) {
+            throw new UsernameNotFoundException("User " + email + " has incomplete credentials (email or password missing in DB)"+user);
+        }
 
         return new org.springframework.security.core.userdetails.User(
-                user.getUserEmail(),
-                user.getPassword(),
-                List.of(new SimpleGrantedAuthority("ROLE_" + user.getUserRole()))
+                rawEmail,
+                rawPassword,
+                List.of(new SimpleGrantedAuthority(roleWithPrefix))
         );
     }
 }

@@ -16,7 +16,13 @@ public class JwtUtils {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
-    public String generateJwtToken(String email,String role) {
+    public String generateJwtToken(String email, String role) {
+        if (email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("Email (subject) cannot be null or empty during JWT generation");
+        }
+        if (role == null || role.trim().isEmpty()) {
+            role = "ROLE_USER"; 
+        }
 
         return Jwts.builder()
                 .setSubject(email)

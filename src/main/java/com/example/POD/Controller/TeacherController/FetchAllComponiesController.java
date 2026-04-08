@@ -15,7 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('TEACHER')")
+@PreAuthorize("hasRole('ROLE_TEACHER')")
 @RequestMapping("/api/teacher")
 public class FetchAllComponiesController {
     private final FetchComponiesService fetchComponiesService;

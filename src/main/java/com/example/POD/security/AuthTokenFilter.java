@@ -33,7 +33,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             }
         } catch (Exception e) {
             // Log karein par filter chain ko chalne dein taaki permitAll kaam kare
-            logger.error("Cannot set user authentication");
+            logger.error("Cannot set user authentication: " + e.getMessage());
         }
         filterChain.doFilter(request, response);
     }

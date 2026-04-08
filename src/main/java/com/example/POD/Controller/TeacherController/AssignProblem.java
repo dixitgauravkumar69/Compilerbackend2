@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('TEACHER')")
+@PreAuthorize("hasRole('ROLE_TEACHER')")
 @RequestMapping("/teacher")
 public class AssignProblem {
     private final UserService userService;
