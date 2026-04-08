@@ -9,6 +9,8 @@ import com.example.POD.Repository.ProblemStatementRepo;
 import com.example.POD.Repository.ProfileRepository;
 import com.example.POD.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -22,9 +24,9 @@ public class UserService {
     private final ProfileRepository profileRepo;
 
 
-    @org.springframework.cache.annotation.Caching(evict = {
-        @org.springframework.cache.annotation.CacheEvict(value = "usersCache", key = "#user.userEmail"),
-        @org.springframework.cache.annotation.CacheEvict(value = "profileEndpointCache", allEntries = true)
+    @Caching(evict = {
+        @CacheEvict(value = "usersCache", key = "#user.userEmail"),
+        @CacheEvict(value = "profileEndpointCache", allEntries = true)
     })
     public UserEntity addUser(UserDTO user) {
         UserEntity userEntity = new UserEntity();
@@ -69,7 +71,7 @@ public class UserService {
         return problemStatementRepo.findAll();
     }
 
-    @org.springframework.cache.annotation.CacheEvict(value = {"allProblemStatementsCache", "assignedProblemsQuery"}, allEntries = true)
+    @CacheEvict(value = {"allProblemStatementsCache", "assignedProblemsQuery"}, allEntries = true)
     public String assignProblemStatement(Long problemId) {
         ProblemStatement problem = problemStatementRepo
                 .findById(problemId)
@@ -82,7 +84,7 @@ public class UserService {
         return "Assigned successfully";
     }
 
-    @org.springframework.cache.annotation.CacheEvict(value = "studentProfileCache", key = "#userId")
+    @CacheEvict(value = "studentProfileCache", key = "#userId")
     public ResponseEntity<?> addStudentProfile(Profile profile,Long userId)
     {
 

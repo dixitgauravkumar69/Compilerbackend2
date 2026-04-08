@@ -5,6 +5,7 @@ import com.example.POD.Repository.ProfileRepository;
 import com.example.POD.Service.UploadImageService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,7 +20,7 @@ public class ProfileImageUploadController {
     private final UploadImageService imageService;
     private final ProfileRepository profileRepository;
     @PostMapping("/uploadImg/{userId}")
-    @org.springframework.cache.annotation.CacheEvict(value = "studentProfileCache", key = "#userId")
+    @CacheEvict(value = "studentProfileCache", key = "#userId")
     public ResponseEntity<?>uploadImage(@PathVariable Long userId, @RequestParam("file")MultipartFile file)
     {
         try {

@@ -1,16 +1,20 @@
 package com.example.POD.DTO;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Data
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
+public class Jobdescription implements Serializable {
 
-
-public class Jobdescription {
+    private static final long serialVersionUID = 1L;
 
     private Long id;
     private String company;

@@ -2,6 +2,7 @@ package com.example.POD.Repository;
 
 import com.example.POD.Entity.ProblemStatement;
 import org.springframework.data.domain.Page;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -12,7 +13,7 @@ public interface ProblemStatementRepo extends JpaRepository <ProblemStatement,Lo
 
 
     @Override
-    @org.springframework.cache.annotation.Cacheable(value = "allProblemStatementsCache")
+    @Cacheable(value = "allProblemStatementsCache")
     List<ProblemStatement> findAll();
 
     Page<ProblemStatement> findByAssignedTrue(Pageable pagable);
@@ -27,7 +28,7 @@ public interface ProblemStatementRepo extends JpaRepository <ProblemStatement,Lo
     @Query("SELECT p FROM ProblemStatement p WHERE p.isLive = true AND p.endTime <= CURRENT_TIMESTAMP")
     List<ProblemStatement> findProblemsToDeactivate();
 
-    @org.springframework.cache.annotation.Cacheable(value = "assignedProblemsQuery", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
+    @Cacheable(value = "assignedProblemsQuery", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
     @Query("SELECT p FROM ProblemStatement p WHERE p.assigned = true ")
     Page<ProblemStatement> findActiveAssignedProblems(Pageable pageable);
 

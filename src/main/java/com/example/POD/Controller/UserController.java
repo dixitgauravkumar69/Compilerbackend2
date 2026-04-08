@@ -12,6 +12,7 @@ import com.example.POD.Service.UserService;
 import com.example.POD.security.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -125,7 +126,7 @@ public class UserController {
 
         } catch (Exception e) {
 
-            return ResponseEntity.status(401).body("Invalid Email or Password");
+            return ResponseEntity.status(401).body("Invalid Email or Password"+ e.getMessage());
         }
     }
 
@@ -137,7 +138,7 @@ public class UserController {
        return ps;
     }
 
-    @org.springframework.cache.annotation.Cacheable(value = "profileEndpointCache")
+    @Cacheable(value = "profileEndpointCache")
     @GetMapping("/profile")
     public UserEntity getProfile(@RequestParam String email)
     {

@@ -3,6 +3,8 @@ package com.example.POD.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
+
 @Entity
 @Table(name = "resume")
 
@@ -12,7 +14,9 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 
-public class ResumeEntity {
+public class ResumeEntity implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -4,7 +4,7 @@ import com.example.POD.Entity.StudentsCodeReport;
 import com.example.POD.Service.EmailService;
 import com.example.POD.Service.SaveCodeInfoService;
 import lombok.RequiredArgsConstructor;
-
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,7 +16,7 @@ public class SaveCodeData {
     private final SaveCodeInfoService saveCodeInfoService;
     private final EmailService emailService;
 
-    @org.springframework.cache.annotation.CacheEvict(value = {"studentPerformanceCache", "problemStudentsCache"}, allEntries = true)
+    @CacheEvict(value = {"studentPerformanceCache", "problemStudentsCache"}, allEntries = true)
     @PostMapping("/SaveStudentCodeInfo/{userId}/{problemId}")
     public String SaveStudentProblemSolution(
             @RequestBody StudentsCodeReport studentsCodeReport,

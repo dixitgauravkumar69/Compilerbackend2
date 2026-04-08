@@ -3,6 +3,7 @@ package com.example.POD.Service;
 import com.example.POD.Entity.ProblemStatement;
 import com.example.POD.Repository.ProblemStatementRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 
@@ -13,7 +14,7 @@ public class ProblemStatementService {
 
     private final ProblemStatementRepo psRepo;
 
-    @org.springframework.cache.annotation.CacheEvict(value = {"allProblemStatementsCache", "assignedProblemsQuery"}, allEntries = true)
+    @CacheEvict(value = {"allProblemStatementsCache", "assignedProblemsQuery"}, allEntries = true)
     public String addStatement(String Statement,String title,String level)
     {
         ProblemStatement psEntity=new ProblemStatement();

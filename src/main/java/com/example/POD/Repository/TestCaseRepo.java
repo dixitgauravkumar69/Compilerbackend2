@@ -2,6 +2,7 @@ package com.example.POD.Repository;
 
 import com.example.POD.Entity.TestCaseEntity;
 import jakarta.transaction.Transactional;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,7 +20,7 @@ public interface TestCaseRepo extends JpaRepository<TestCaseEntity, Long> {
     @Modifying
     @Transactional
     void deleteByProblemId(Long id);
-    @org.springframework.cache.annotation.Cacheable(value = "testCaseCache", key = "#problemId")
+    @Cacheable(value = "testCaseCache", key = "#problemId")
     @Query("SELECT t FROM TestCaseEntity t WHERE t.problem.id = :problemId")
     List<TestCaseEntity> getTestCasesByProblemId(@Param("problemId") Long problemId);
 

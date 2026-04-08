@@ -6,6 +6,7 @@ import com.example.POD.Entity.ProblemStatement;
 
 import com.example.POD.Repository.TestCaseRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class TestCaseService {
 
     private final TestCaseRepo testCaseRepo;
 
-    @org.springframework.cache.annotation.CacheEvict(value = "testCaseCache", key = "#problem.id")
+    @CacheEvict(value = "testCaseCache", key = "#problem.id")
     public TestCaseEntity addTestCase(ProblemStatement problem, String input, String output) {
         TestCaseEntity testCase = new TestCaseEntity();
         testCase.setProblem(problem);
@@ -42,7 +43,7 @@ public class TestCaseService {
     }
 
 
-    @org.springframework.cache.annotation.CacheEvict(value = "testCaseCache", key = "#pId")
+    @CacheEvict(value = "testCaseCache", key = "#pId")
     public ResponseEntity<?> editTestCase(Long pId, TestCaseDTO testCaseDTO) {
         List<TestCaseEntity> testCases = testCaseRepo.getTestCasesByProblemId(pId);
 
@@ -69,7 +70,7 @@ public class TestCaseService {
     }
 
 
-    @org.springframework.cache.annotation.CacheEvict(value = "testCaseCache", allEntries = true)
+    @CacheEvict(value = "testCaseCache", allEntries = true)
     public String deleteTestCase(Long tId)
     {
         Optional<TestCaseEntity> testcase= testCaseRepo.findById(tId);

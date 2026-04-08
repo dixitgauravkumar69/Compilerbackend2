@@ -9,6 +9,7 @@ import com.example.POD.Repository.CampusRepository;
 import com.example.POD.Service.CampusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,7 +35,7 @@ public class CampusController {
     private Cloudinary  cloudinary; //  inject Cloudinary
 
 
-    @org.springframework.cache.annotation.CacheEvict(value = {"jobsCache", "allCompaniesCache"}, allEntries = true)
+    @CacheEvict(value = {"jobsCache", "allCompaniesCache"}, allEntries = true)
     @PostMapping(value="/addJob", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public CampusEntity addJob(
             @RequestPart("job") CampusEntity campus,
@@ -105,7 +106,7 @@ public class CampusController {
 
 
 
-    @org.springframework.cache.annotation.CacheEvict(value = {"jobsCache", "jobDescriptionCache", "allCompaniesCache"}, allEntries = true)
+    @CacheEvict(value = {"jobsCache", "jobDescriptionCache", "allCompaniesCache"}, allEntries = true)
     @DeleteMapping("/deleteJob/{CampusId}")
     public ResponseEntity<String> deleteJob(@PathVariable Long CampusId) {
 

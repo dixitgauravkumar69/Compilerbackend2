@@ -9,7 +9,8 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "ProblemStatement")
 public class ProblemStatement implements Serializable {

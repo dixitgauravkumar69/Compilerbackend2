@@ -7,6 +7,7 @@ import com.example.POD.Repository.SaveCodeResponseRepo;
 import com.example.POD.Repository.TestCaseRepo;
 import com.example.POD.Service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,7 +21,7 @@ public class AssignProblem {
     private final SaveCodeResponseRepo saveCodeResponseRepo;
 
 
-    @org.springframework.cache.annotation.CacheEvict(value = {"allProblemStatementsCache", "assignedProblemsQuery"}, allEntries = true)
+    @CacheEvict(value = {"allProblemStatementsCache", "assignedProblemsQuery"}, allEntries = true)
     @GetMapping("/assignProblem/{problemId}")
     public String assignProblem(@PathVariable Long problemId)
     {
@@ -29,7 +30,7 @@ public class AssignProblem {
     }
 
     // delete Problem statement by the teacher request......
-    @org.springframework.cache.annotation.CacheEvict(value = {"allProblemStatementsCache", "assignedProblemsQuery", "testCaseCache", "problemStudentsCache"}, allEntries = true)
+    @CacheEvict(value = {"allProblemStatementsCache", "assignedProblemsQuery", "testCaseCache", "problemStudentsCache"}, allEntries = true)
     @DeleteMapping("/deleteProblem/{id}")
     public String deleteProblem(@PathVariable Long id)
     {
@@ -46,7 +47,7 @@ public class AssignProblem {
      return Problem;
   }
 
-  @org.springframework.cache.annotation.CacheEvict(value = {"allProblemStatementsCache", "assignedProblemsQuery"}, allEntries = true)
+  @CacheEvict(value = {"allProblemStatementsCache", "assignedProblemsQuery"}, allEntries = true)
   @PatchMapping("/updateProblem/{problemId}")
     public String updateProblem(@PathVariable Long problemId, @RequestBody ProblemStatement updatedData )
   {

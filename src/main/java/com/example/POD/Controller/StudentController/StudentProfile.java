@@ -4,6 +4,7 @@ import com.example.POD.Entity.Profile;
 import com.example.POD.Repository.ProfileRepository;
 import com.example.POD.Service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class StudentProfile {
     private final UserService userService;
     private final ProfileRepository profileRepository;
-    @org.springframework.cache.annotation.CacheEvict(value = "studentProfileCache", key = "#userId")
+    @CacheEvict(value = "studentProfileCache", key = "#userId")
     @PostMapping("/addProfile/{userId}")
     public ResponseEntity<?> addProfile(@RequestBody Profile profile, @PathVariable Long userId)
     {

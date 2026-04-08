@@ -9,6 +9,7 @@ import com.example.POD.Repository.PlacementApplicationRepo;
 import com.example.POD.Repository.ProfileRepository;
 import com.example.POD.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -24,7 +25,7 @@ public class PlacementApplicationService {
     private final ProfileRepository profileRepository;
     private final CampusRepository campusRepository;
 
-    @org.springframework.cache.annotation.CacheEvict(value = {"userPlacementCache", "appliedStudentsCache"}, allEntries = true)
+    @CacheEvict(value = {"userPlacementCache", "appliedStudentsCache"}, allEntries = true)
     public String PlacementdataService(Long userId, Long campusid) {
 
         // 🔹 USER CHECK

@@ -3,13 +3,14 @@ package com.example.POD.Repository;
 import com.example.POD.DTO.Jobdescription;
 
 import com.example.POD.Entity.CampusEntity;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
 public interface CampusRepository extends JpaRepository<CampusEntity,Long> {
-    @org.springframework.cache.annotation.Cacheable(value = "jobsCache", key = "#Semester + '-' + #branch")
+    @Cacheable(value = "jobsCache", key = "#Semester + '-' + #branch")
     List<CampusEntity> findBySemesterAndEligibleBranch(Integer Semester,String branch);
 
     @Query("""
@@ -33,12 +34,12 @@ c.attachment
 FROM CampusEntity c
 WHERE c.id = :id
 """)
-    @org.springframework.cache.annotation.Cacheable(value = "jobDescriptionCache", key = "#id")
+    @Cacheable(value = "jobDescriptionCache", key = "#id")
     Jobdescription getJobDescription(Long id);
 
 
     @Override
-    @org.springframework.cache.annotation.Cacheable(value = "allCompaniesCache")
+    @Cacheable(value = "allCompaniesCache")
     List<CampusEntity> findAll();
 
 }

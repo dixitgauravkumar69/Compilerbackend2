@@ -8,6 +8,7 @@ import com.example.POD.Repository.ProfileRepository;
 import com.example.POD.Repository.ResumeRepository;
 import com.example.POD.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,7 @@ public class ResumeService {
     private final UserRepository userRepository;
     private final ResumeRepository resumeRepository;
 
-    @org.springframework.cache.annotation.CacheEvict(value = "resumeCache", key = "#userId")
+    @CacheEvict(value = "resumeCache", key = "#userId")
     public ResumeEntity addResumeInfo(ResumeDTO resumeDTO, Long userId) {
 
         UserEntity userBasicInfo = userRepository.findByuserid(userId);
