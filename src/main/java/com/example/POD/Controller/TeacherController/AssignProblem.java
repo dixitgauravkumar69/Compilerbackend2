@@ -8,11 +8,12 @@ import com.example.POD.Repository.TestCaseRepo;
 import com.example.POD.Service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-
+@PreAuthorize("hasRole('TEACHER')")
 @RequestMapping("/teacher")
 public class AssignProblem {
     private final UserService userService;
@@ -21,6 +22,7 @@ public class AssignProblem {
     private final SaveCodeResponseRepo saveCodeResponseRepo;
 
 
+ 
     @CacheEvict(value = {"allProblemStatementsCache", "assignedProblemsQuery"}, allEntries = true)
     @GetMapping("/assignProblem/{problemId}")
     public String assignProblem(@PathVariable Long problemId)
@@ -30,6 +32,7 @@ public class AssignProblem {
     }
 
     // delete Problem statement by the teacher request......
+   
     @CacheEvict(value = {"allProblemStatementsCache", "assignedProblemsQuery", "testCaseCache", "problemStudentsCache"}, allEntries = true)
     @DeleteMapping("/deleteProblem/{id}")
     public String deleteProblem(@PathVariable Long id)

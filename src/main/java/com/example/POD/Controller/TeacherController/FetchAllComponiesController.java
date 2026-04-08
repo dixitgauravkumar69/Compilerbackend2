@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('TEACHER')")
 @RequestMapping("/api/teacher")
 public class FetchAllComponiesController {
     private final FetchComponiesService fetchComponiesService;

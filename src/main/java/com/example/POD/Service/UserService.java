@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -67,6 +68,7 @@ public class UserService {
     }
 
 
+    @PreAuthorize("hasRole('TEACHER')") 
     public List<ProblemStatement> getProblemStatements() {
         return problemStatementRepo.findAll();
     }
