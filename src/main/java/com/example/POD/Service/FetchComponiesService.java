@@ -5,6 +5,7 @@ import com.example.POD.Entity.UserEntity;
 import com.example.POD.Repository.CampusRepository;
 import com.example.POD.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +15,10 @@ import java.util.List;
 public class FetchComponiesService {
     private final CampusRepository campusRepository;
     private final UserRepository user;
+
+
+
+
     public List<CampusEntity> getAllCompony(Long teacherId)
     {
 
@@ -22,6 +27,7 @@ public class FetchComponiesService {
         if(Teacher!=null)
         {
             List<CampusEntity> campus= campusRepository.findAll();
+            System.out.println("Campus cached");
             return campus;
         }
         return java.util.Collections.emptyList();

@@ -39,7 +39,7 @@ WHERE c.id = :id
 
 
     @Override
-    @Cacheable(value = "allCompaniesCache")
-    List<CampusEntity> findAll();
+    @Cacheable(value = "allCompaniesCache",key="'allCompany'")
+   public List<CampusEntity> findAll();
 
 }

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -81,9 +82,9 @@ public class UserService {
     }
 
 
-    @PreAuthorize("hasRole('TEACHER')") 
+    @PreAuthorize("hasRole('TEACHER')")
     public List<ProblemStatement> getProblemStatements() {
-        return problemStatementRepo.findAll();
+        return problemStatementRepo.findAll(Sort.by(Sort.Direction.DESC, "id"));
     }
 
     @CacheEvict(value = {"allProblemStatementsCache", "assignedProblemsQuery"}, allEntries = true)

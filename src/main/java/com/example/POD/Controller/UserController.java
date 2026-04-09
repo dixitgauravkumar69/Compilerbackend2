@@ -96,7 +96,7 @@ public class UserController {
     public ResponseEntity<?> loginUser(@RequestBody UserLoginDTO userLoginDTO) {
 
         try {
-            //  1. Fetch user first
+            //  Fetch user first
             UserEntity user = userRepo.findByUserEmail(userLoginDTO.getUserEmail());
 
             if (user == null) {
@@ -112,7 +112,7 @@ public class UserController {
                 return ResponseEntity.status(401).body("Invalid Email or Password");
             }
 
-            // 🔹 3. Authenticate manually (since we already validated)
+            // Authenticate manually (since we already validated)
             // Safety check for role to avoid "Cannot pass null or empty values" error
             String rawRole = (user.getUserRole() == null || user.getUserRole().trim().isEmpty()) ? "USER" : user.getUserRole();
             
@@ -129,7 +129,7 @@ public class UserController {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            // 🔹 4. Generate JWT
+            //  Generate JWT
             // Safety check for email to avoid JWT constructor errors
             if (user.getUserEmail() == null || user.getUserEmail().trim().isEmpty()) {
                 throw new IllegalStateException("User found but has no valid email in DB");
@@ -140,7 +140,7 @@ public class UserController {
                     roleWithPrefix
             );
 
-            // 🔹 5. Return response
+            //  Return response
             return ResponseEntity.ok(new JwtEntity(
                     jwt,
                     "Bearer",
@@ -161,6 +161,7 @@ public class UserController {
     public List<ProblemStatement> getProblemStatements()
     {
       List< ProblemStatement>  ps= userService.getProblemStatements();
+
        return ps;
     }
 
