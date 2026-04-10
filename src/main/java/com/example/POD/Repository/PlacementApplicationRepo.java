@@ -20,4 +20,9 @@ public interface PlacementApplicationRepo extends JpaRepository<PlacementApplica
     @Query("SELECT p FROM PlacementApplicationData p WHERE p.campus.id = :campusId")
     List<PlacementApplicationData> findByCampusId(@Param("campusId") Long campusId);
 
+    @Query("SELECT p FROM PlacementApplicationData p WHERE p.campus.id = :campusId AND p.user.id = :userId")
+    PlacementApplicationData findByCampusAndUser(@Param("campusId") Long campusId,
+                                                 @Param("userId") Long userId);
+
+
 }

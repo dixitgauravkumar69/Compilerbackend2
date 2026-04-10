@@ -5,11 +5,9 @@ import com.example.POD.Entity.PlacementApplicationData;
 import com.example.POD.Service.AppliedStudentsService;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,6 +21,13 @@ public class AppliedStudentsController {
     public List<PlacementApplicationData>  getAppliedStudents(@PathVariable Long campusId)
     {
       return  appliedStudentsService.appliedStudent(campusId);
+    }
+
+    @PatchMapping("/SelectionStatus/change/{campusId}/{userId}")
+
+    public ResponseEntity changeSelectionStatus(@PathVariable Long campusId,@PathVariable Long userId,@RequestBody String currentStatus)
+    {
+        return appliedStudentsService.selectionStatusChange(campusId,userId,currentStatus);
     }
 
 }

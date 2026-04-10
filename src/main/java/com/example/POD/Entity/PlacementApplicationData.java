@@ -38,4 +38,7 @@ public class PlacementApplicationData implements Serializable {
     private LocalDateTime appliedDate;
 
 
+    private String selectionStatus;
+
+
 }

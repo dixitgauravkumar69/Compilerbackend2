@@ -10,10 +10,12 @@ import com.example.POD.Repository.ProfileRepository;
 import com.example.POD.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Service
@@ -86,5 +88,18 @@ public class PlacementApplicationService {
 
         // 🔹 FINAL FALLBACK
         return "Sorry you are not eligible contact with Placement Cell";
+    }
+
+
+
+
+
+    public Boolean isApplied(Long userId) {
+        PlacementApplicationData placement = placementApplicationRepo.findByUserUserid(userId);
+
+        if (placement != null && "Applied".equals(placement.getApplicationStatus())) {
+            return true;
+        }
+        return false;
     }
 }

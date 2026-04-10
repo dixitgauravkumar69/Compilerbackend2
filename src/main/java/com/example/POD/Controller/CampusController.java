@@ -86,7 +86,8 @@ public class CampusController {
             dto.setCompany(job.getCompany());
             dto.setTitle(job.getTitle());
             dto.setJobType(job.getJobType());
-
+            dto.setBond(job.getBond());
+            dto.setMinCGPA(job.getCgpa());
             dto.setLocation(job.getLocation());
             dto.setSalaryPackage(job.getSalaryPackage());
             dto.setRegistrationLastDate(job.getRegistrationLastDate());

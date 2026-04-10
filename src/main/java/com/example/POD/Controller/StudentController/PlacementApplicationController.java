@@ -3,10 +3,7 @@ package com.example.POD.Controller.StudentController;
 
 import com.example.POD.Service.PlacementApplicationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,4 +17,11 @@ public class PlacementApplicationController {
     {
       return  placementApplicationService.PlacementdataService(userId,campusId);
     }
+
+    @GetMapping("/studentApplication/isApplied/{userId}")
+    public Boolean isApplied(@PathVariable Long userId)
+    {
+        return placementApplicationService.isApplied(userId);
+    }
+
 }
