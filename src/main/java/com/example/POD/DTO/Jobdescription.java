@@ -33,4 +33,5 @@ public class Jobdescription implements Serializable {
     private String selectionProcess;
     private LocalDate registrationLastDate;
     private String allocate;
+    private String selectionStatus;
 }

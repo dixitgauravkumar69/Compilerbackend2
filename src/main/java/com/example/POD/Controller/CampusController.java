@@ -5,7 +5,9 @@ import com.cloudinary.utils.ObjectUtils;
 import com.example.POD.DTO.Jobdescription;
 import com.example.POD.DTO.ShowJobsStudent;
 import com.example.POD.Entity.CampusEntity;
+import com.example.POD.Entity.PlacementApplicationData;
 import com.example.POD.Repository.CampusRepository;
+import com.example.POD.Repository.PlacementApplicationRepo;
 import com.example.POD.Service.CampusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,7 @@ public class CampusController {
 
     private final CampusService campusService;
     private final CampusRepository campusRepository;
+    private final PlacementApplicationRepo placementApplicationRepo;
 
     @Autowired
     private Cloudinary  cloudinary; //  inject Cloudinary
@@ -103,6 +106,16 @@ public class CampusController {
     @GetMapping("/student/job/{id}")
     public Jobdescription getJobDescription(@PathVariable Long id){
         return campusRepository.getJobDescription(id);
+    }
+
+
+    //for getting slection status of student which was updated by teacher.........
+    @GetMapping("/student/jobSelection/{campusId}/{userId}")
+    public String  getSelectionStatus(@PathVariable Long campusId, @PathVariable Long userId)
+    {
+        PlacementApplicationData  placementApplicationData=placementApplicationRepo.findByCampusAndUser(campusId, userId);
+
+        return placementApplicationData.getSelectionStatus() ;
     }
 
 

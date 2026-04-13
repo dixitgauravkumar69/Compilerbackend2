@@ -14,7 +14,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-@Slf4j // 2. Isse 'log' object mil jayega
+@Slf4j // . Isse 'log' object mil jayega
 @Service
 @RequiredArgsConstructor
 public class LiveService {

@@ -25,8 +25,11 @@ public class StudentsCodeReport implements Serializable {
 
 
     private Integer marks;
+
     private String takenTime;
     private String complexity;
+    private String abnormalSubmitionReason;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;
