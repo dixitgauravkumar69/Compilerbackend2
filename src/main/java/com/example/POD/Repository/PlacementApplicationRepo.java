@@ -25,4 +25,7 @@ public interface PlacementApplicationRepo extends JpaRepository<PlacementApplica
                                                  @Param("userId") Long userId);
 
 
+
+
+
 }

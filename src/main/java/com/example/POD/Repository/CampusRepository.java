@@ -28,14 +28,14 @@ c.bond,
 c.skillsRequired,
 c.jobDescription,
 c.selectionProcess,
-c.registrationLastDate,
-c.attachment
+c.registrationLastDate
 )
 FROM CampusEntity c
 WHERE c.id = :id
 """)
     @Cacheable(value = "jobDescriptionCache", key = "#id")
     Jobdescription getJobDescription(Long id);
+
 
 
     @Override
