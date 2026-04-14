@@ -43,6 +43,7 @@
 			<artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
 
+		<!-- OPTIONAL (you can remove if not using SMTP directly) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
@@ -95,27 +96,6 @@
 			<artifactId>jjwt-jackson</artifactId>
 			<version>0.11.5</version>
 			<scope>runtime</scope>
-		</dependency>
-
-		<!-- SENDINBLUE (FIXED SAFE VERSION) -->
-		<dependency>
-			<groupId>com.sendinblue</groupId>
-			<artifactId>sib-api-v3-sdk</artifactId>
-			<version>7.0.0</version>
-		</dependency>
-
-		<!-- OKHTTP COMPAT FIX -->
-		<dependency>
-			<groupId>com.squareup.okhttp3</groupId>
-			<artifactId>okhttp</artifactId>
-			<version>4.12.0</version>
-		</dependency>
-
-		<!-- KOTLIN RUNTIME FIX -->
-		<dependency>
-			<groupId>org.jetbrains.kotlin</groupId>
-			<artifactId>kotlin-stdlib</artifactId>
-			<version>1.9.22</version>
 		</dependency>
 
 		<!-- PDF -->
