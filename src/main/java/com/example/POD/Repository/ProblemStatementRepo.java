@@ -13,7 +13,6 @@ public interface ProblemStatementRepo extends JpaRepository <ProblemStatement,Lo
 
 
     @Override
-    @Cacheable(value = "allProblemStatementsCache")
     List<ProblemStatement> findAll();
 
     Page<ProblemStatement> findByAssignedTrue(Pageable pagable);

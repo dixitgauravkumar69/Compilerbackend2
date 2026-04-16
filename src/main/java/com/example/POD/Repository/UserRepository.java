@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface  UserRepository extends JpaRepository<UserEntity,Long> {
 
- @Cacheable(value = "usersCache", key = "#email", unless = "#result == null")
+
  @Query("SELECT u FROM UserEntity u WHERE u.userEmail = :email")
  UserEntity findByUserEmail(@Param("email") String email);
 

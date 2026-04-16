@@ -106,6 +106,77 @@ public class EmailService {
         }
     }
 
+
+    @Async
+    public void sendResetLinkToUser(String email,String resetLink)
+    {
+        try {
+
+
+
+            String htmlContent = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+        </head>
+        <body style="font-family: Arial, sans-serif; background:#f4f7fa; padding:20px;">
+            
+            <div style="max-width:600px; margin:auto; background:#ffffff; padding:25px; border-radius:10px;">
+
+                <h2 style="color:#0f172a;">🔐 Password Reset Request</h2>
+
+                <p>Hello,</p>
+
+                <p>We received a request to reset your password for your <b>Dev Campus</b> account.</p>
+
+                <p>Click the button below to reset your password:</p>
+
+                <div style="text-align:center; margin:30px 0;">
+                    <a href="%s" 
+                       style="background:#2563eb; color:#ffffff; padding:12px 25px; text-decoration:none; border-radius:6px; font-weight:bold;">
+                        Reset Password
+                    </a>
+                </div>
+
+                <p style="font-size:14px;">
+                    ⏳ This link will expire in <b>15 minutes</b>.
+                </p>
+
+                <p style="font-size:14px;">
+                    If you did not request this, you can safely ignore this email.
+                </p>
+
+                <hr style="margin:20px 0;">
+
+                <p style="font-size:12px; color:#6b7280;">
+                    If the button doesn't work, copy and paste this link into your browser:
+                </p>
+
+                <p style="word-break:break-all; font-size:12px; color:#2563eb;">
+                    %s
+                </p>
+
+                <p style="font-size:12px; margin-top:20px;">
+                    © 2026 Dev Campus
+                </p>
+
+            </div>
+
+        </body>
+        </html>
+        """.formatted(resetLink, resetLink);
+
+            sendEmail(email, "Reset Your Password 🔐", htmlContent);
+
+            System.out.println(" Reset link sent successfully to " + email);
+
+        } catch (Exception e) {
+            System.out.println(" Reset link sending issue " + e.getMessage());
+        }
+    }
+
+
     // ===================== COMMON EMAIL METHOD =====================
     private void sendEmail(String toEmail, String subject, String htmlContent) throws Exception {
 

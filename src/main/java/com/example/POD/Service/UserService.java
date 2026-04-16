@@ -1,10 +1,13 @@
 package com.example.POD.Service;
 
+import com.example.POD.Controller.NotificationController;
 import com.example.POD.DTO.UserDTO;
 import com.example.POD.DTO.UserLoginDTO;
+import com.example.POD.Entity.NotificationEntity;
 import com.example.POD.Entity.ProblemStatement;
 import com.example.POD.Entity.Profile;
 import com.example.POD.Entity.UserEntity;
+import com.example.POD.Repository.NotificationRepository;
 import com.example.POD.Repository.ProblemStatementRepo;
 import com.example.POD.Repository.ProfileRepository;
 import com.example.POD.Repository.UserRepository;
@@ -19,6 +22,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -32,6 +36,8 @@ public class UserService {
     private final ProblemStatementRepo problemStatementRepo;
     private final ProfileRepository profileRepo;
     private final CacheManager cacheManager;
+    private final NotificationController notificationController;
+    private final NotificationRepository notificationRepository;
 
 
     @Caching(evict = {
@@ -96,6 +102,39 @@ public class UserService {
         problem.setAssigned(true);
 
         problemStatementRepo.save(problem);
+
+
+// Sending real time notification and save it .................................for while
+
+        List<Long>users;
+
+        if(problem.getSemester()==null)
+        {
+            users=profileRepo.findAllUsers();
+            System.out.println(users);
+        }
+
+        else {
+            users= profileRepo.findBySemester(problem.getSemester());
+            System.out.println(users);
+
+        }
+
+        for(Long user:users)
+        {
+
+            NotificationEntity notificationEntity=new NotificationEntity();
+            //send in real time
+            notificationController.sendToUser(user,"New problem for practice is added ");
+
+            //Saved in db
+            notificationEntity.setUserId(user);
+            notificationEntity.setMessage("New problem for practice is added");
+            notificationEntity.setType("addedProblem");
+
+
+            notificationRepository.save(notificationEntity);
+        }
 
         return "Assigned successfully";
     }

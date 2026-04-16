@@ -5,9 +5,13 @@ import com.cloudinary.utils.ObjectUtils;
 import com.example.POD.DTO.Jobdescription;
 import com.example.POD.DTO.ShowJobsStudent;
 import com.example.POD.Entity.CampusEntity;
+import com.example.POD.Entity.NotificationEntity;
 import com.example.POD.Entity.PlacementApplicationData;
+import com.example.POD.Entity.Profile;
 import com.example.POD.Repository.CampusRepository;
+import com.example.POD.Repository.NotificationRepository;
 import com.example.POD.Repository.PlacementApplicationRepo;
+import com.example.POD.Repository.ProfileRepository;
 import com.example.POD.Service.CampusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 import org.springframework.http.ResponseEntity;
@@ -33,17 +38,21 @@ public class CampusController {
     private final CampusService campusService;
     private final CampusRepository campusRepository;
     private final PlacementApplicationRepo placementApplicationRepo;
+    private final NotificationController notificationController;
+    private final ProfileRepository profile;
+    public final NotificationRepository notificationRepository;
 
     @Autowired
     private Cloudinary  cloudinary; //  inject Cloudinary
 
 
-    @CacheEvict(value = {"jobsCache", "allCompaniesCache"}, allEntries = true)
+    @CacheEvict(value = {"jobsCache", "allCompaniesCache","notificationCache"}, allEntries = true)
+
     @PostMapping(value="/addJob", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public CampusEntity addJob(
-            @RequestPart("job") CampusEntity campus,
-            @RequestPart(value = "attachment", required = false) MultipartFile attachment
-    ) {
+
+    public CampusEntity addJob(@RequestPart("job") CampusEntity campus, @RequestPart(value = "attachment", required = false) MultipartFile attachment) {
+        CampusEntity savedUser=new CampusEntity();
+
         try {
             if (attachment != null && !attachment.isEmpty()) {
 
@@ -68,13 +77,39 @@ public class CampusController {
 
                 // Step 4: Delete temporary file
                 tempFile.delete();
+
             }
+               savedUser=campusService.addJob(campus);// save kr lia db me job ko
+
+            // ab notification vala suru kia jisme sbse phle
+                //1. Jo job save kr li hai usi ka campus id se user le aaenge profile se
+                    // branch and semester ke base me
+            List<Long>users=profile.findByBranchAndSemester(savedUser.getEligibleBranch(),savedUser.getSemester());
+
+            System.out.println(users);
+
+            NotificationEntity notificationEntity=new NotificationEntity();
+
+            for(Long user:users)
+            {
+                notificationController.sendToUser(user,"New opportunity is added for you");
+
+                notificationEntity.setUserId(user);
+                notificationEntity.setMessage("New opportunity is added for you");
+                notificationEntity.setType("addedJob");
+                notificationRepository.save(notificationEntity);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return campusService.addJob(campus);
+        return savedUser;
     }
+
+
+
+
     @GetMapping("/getJobInfo/{semester}/{branch}")
     public List<ShowJobsStudent> getJobInfo(@PathVariable Integer semester,@PathVariable String branch)
     {
@@ -103,9 +138,19 @@ public class CampusController {
     }
 
 
-    @GetMapping("/student/job/{id}")
-    public Jobdescription getJobDescription(@PathVariable Long id){
-        return campusRepository.getJobDescription(id);
+    @GetMapping("/student/job/{campusId}/{userId}")
+    public Jobdescription getJobDescription(@PathVariable Long campusId,@PathVariable Long userId){
+
+      Profile userProfile= profile.findByUserUserid(userId);
+     Optional <CampusEntity> campusInfo=campusRepository.findById(campusId);
+
+
+
+        if(userProfile.getCgpa() < Double.parseDouble(campusInfo.get().getCgpa())) {
+
+            return null;
+        }
+        return campusRepository.getJobDescription(campusId);
     }
 
 

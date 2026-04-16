@@ -89,9 +89,10 @@ public class WebSecurityConfig {
                         .requestMatchers(
                                 "/api/User/login",
                                 "/api/User/addUser",
-                                "/api/User/verifyOtpAndRegister"
-
-                        ).permitAll()
+                                "/api/User/verifyOtpAndRegister",
+                             "/api/User/forget/password/**",
+                             "/api/User/reset-password",
+                             "/sse/**").permitAll()
 
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/teacher/**").hasAnyRole("TEACHER","ADMIN")

@@ -18,10 +18,10 @@ public class PlacementApplicationController {
       return  placementApplicationService.PlacementdataService(userId,campusId);
     }
 
-    @GetMapping("/studentApplication/isApplied/{userId}")
-    public Boolean isApplied(@PathVariable Long userId)
+    @GetMapping("/studentApplication/isApplied/{userId}/{campusId}")
+    public Boolean isApplied(@PathVariable Long userId,@PathVariable Long campusId)
     {
-        return placementApplicationService.isApplied(userId);
+        return placementApplicationService.isApplied(userId,campusId);
     }
 
 }

@@ -1,8 +1,12 @@
 package com.example.POD.Service;
 
+import com.example.POD.Controller.NotificationController;
 import com.example.POD.DTO.LiveDTO;
+import com.example.POD.Entity.NotificationEntity;
 import com.example.POD.Entity.ProblemStatement;
+import com.example.POD.Repository.NotificationRepository;
 import com.example.POD.Repository.ProblemStatementRepo;
+import com.example.POD.Repository.ProfileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j; // for logs in place of sout
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,6 +23,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LiveService {
     private final ProblemStatementRepo problemStatementRepo;
+    private final ProfileRepository profileRepository;
+    private final NotificationController notificationController;
+    private final NotificationRepository notificationRepository;
 
     public ProblemStatement problemLive(LiveDTO liveDTO, Long problemId) {
 
@@ -47,7 +54,27 @@ public class LiveService {
 
         log.info("Set timing for Problem ID {} (UTC): Start={}, End={}", problemId, startTimeUTC, endTimeUTC);
 
-        return problemStatementRepo.save(problemForLive);
+
+        ProblemStatement problem=problemStatementRepo.save(problemForLive);
+
+
+        //Logic for sending notification ........
+        List<Long>users=profileRepository.findBySemester(problem.getSemester());
+
+        for(Long user:users)
+        {
+            NotificationEntity notificationEntity=new NotificationEntity();
+
+           notificationController.sendToUser(user,"Problem is live solve fast");
+
+            notificationEntity.setUserId(user);
+            notificationEntity.setMessage("Problem is live now :"+problem.getId());
+            notificationEntity.setType("liveProblem");
+
+
+            notificationRepository.save(notificationEntity);
+        }
+        return problem ;
     }
 
     @Scheduled(fixedRate = 60000)

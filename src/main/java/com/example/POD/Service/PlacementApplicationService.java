@@ -30,7 +30,7 @@ public class PlacementApplicationService {
     @CacheEvict(value = {"userPlacementCache", "appliedStudentsCache"}, allEntries = true)
     public String PlacementdataService(Long userId, Long campusid) {
 
-        // 🔹 USER CHECK
+
         UserEntity user = userRepository.findByuserid(userId);
         if (user == null) {
             return "User not found with ID: " + userId;
@@ -57,13 +57,13 @@ public class PlacementApplicationService {
             return "Not eligible due to low CGPA";
         }
 
-        // 🔹 BRANCH CHECK
+
         if (!campus.getEligibleBranch().equalsIgnoreCase(profile.getBranch())) {
             return "Not eligible for this branch";
         }
 
         //IF user applied already...............
-        PlacementApplicationData placement=placementApplicationRepo.findByUserUserid(userId);
+        PlacementApplicationData placement=placementApplicationRepo.findByCampusAndUser(campusid,userId);
 
         if (placement != null && "Applied".equals(placement.getApplicationStatus())) {
             return "You have applied successfully PREVIOUSLY";
@@ -94,8 +94,8 @@ public class PlacementApplicationService {
 
 
 
-    public Boolean isApplied(Long userId) {
-        PlacementApplicationData placement = placementApplicationRepo.findByUserUserid(userId);
+    public Boolean isApplied(Long userId,Long campusId) {
+        PlacementApplicationData placement = placementApplicationRepo.findByCampusAndUser(campusId,userId);
 
         if (placement != null && "Applied".equals(placement.getApplicationStatus())) {
             return true;

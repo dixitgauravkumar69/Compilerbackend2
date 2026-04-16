@@ -26,6 +26,4 @@ public interface PlacementApplicationRepo extends JpaRepository<PlacementApplica
 
 
 
-
-
 }
