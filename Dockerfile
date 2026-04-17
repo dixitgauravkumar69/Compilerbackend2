@@ -1,31 +1,28 @@
 # syntax=docker/dockerfile:1.7
 
-# ---------- STAGE 1 : DEPENDENCIES ----------
-FROM maven:3.9.9-eclipse-temurin-17 AS deps
-WORKDIR /app
-
-COPY pom.xml .
-RUN --mount=type=cache,target=/root/.m2 \
-    mvn -B -q -e dependency:go-offline
-
-# ---------- STAGE 2 : BUILD ----------
+# ---------- STAGE 1 : BUILD ----------
 FROM maven:3.9.9-eclipse-temurin-17 AS build
 WORKDIR /app
 
-COPY --from=deps /root/.m2 /root/.m2
+# Copy Maven descriptor first for better caching
 COPY pom.xml .
+
+# Pre-fetch dependencies
+RUN --mount=type=cache,target=/root/.m2 \
+    mvn -B -q -e dependency:go-offline
+
+# Copy source after dependencies
 COPY src ./src
 
+# Build using same cache mount pattern
 RUN --mount=type=cache,target=/root/.m2 \
     mvn -B -T 1C clean package -DskipTests
 
-# Extract Spring Boot layers for better caching
-RUN java -Djarmode=layertools -jar /app/target/*.jar extract
-
-# ---------- STAGE 3 : RUNTIME ----------
+# ---------- STAGE 2 : RUNTIME ----------
 FROM eclipse-temurin:17-jre-jammy
-WORKDIR /app
+
 ENV PORT=8080
+WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
@@ -34,14 +31,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+COPY --from=build /app/target/*.jar /app/app.jar
+
 RUN useradd -m -u 10001 runner
-
-COPY --from=build /app/dependencies/ ./
-COPY --from=build /app/spring-boot-loader/ ./
-COPY --from=build /app/snapshot-dependencies/ ./
-COPY --from=build /app/application/ ./
-
 USER runner
+
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-XX:+UseSerialGC", "-XX:+UseContainerSupport", "-Xmx300m", "org.springframework.boot.loader.launch.JarLauncher"]
+ENTRYPOINT ["java", "-XX:+UseSerialGC", "-XX:+UseContainerSupport", "-Xmx300m", "-jar", "/app/app.jar"]
