@@ -9,6 +9,7 @@ import com.example.POD.Repository.ProblemStatementRepo;
 import com.example.POD.Repository.ProfileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j; // for logs in place of sout
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,7 @@ public class LiveService {
     private final NotificationController notificationController;
     private final NotificationRepository notificationRepository;
 
+    @CacheEvict(value = "notificationCache", allEntries = true)
     public ProblemStatement problemLive(LiveDTO liveDTO, Long problemId) {
 
         //  Convert IST → UTC

@@ -1,53 +1,47 @@
-# ---------- STAGE 1 : BUILD ----------
-FROM maven:3.9.9-eclipse-temurin-17 AS build
+# syntax=docker/dockerfile:1.7
 
+# ---------- STAGE 1 : DEPENDENCIES ----------
+FROM maven:3.9.9-eclipse-temurin-17 AS deps
 WORKDIR /app
 
-# Copy only pom.xml first to leverage Docker layer caching
 COPY pom.xml .
-
-# Use BuildKit cache mount for Maven dependencies
-# This significantly speeds up builds on Render's build servers
 RUN --mount=type=cache,target=/root/.m2 \
     mvn -B -q -e dependency:go-offline
 
-COPY src ./src
-
-# Use cache mount again for the build process
-RUN --mount=type=cache,target=/root/.m2 \
-    mvn -T 1C clean package -DskipTests
-
-# ---------- STAGE 2 : RUN ----------
-# Using 'jre' instead of 'jdk' if you don't need javac at runtime saves ~150MB
-# Since you ARE building a compiler platform, we stick to JDK.
-FROM eclipse-temurin:17-jdk-jammy
-
-# Set environment variables for Render
-ENV PORT=8080
+# ---------- STAGE 2 : BUILD ----------
+FROM maven:3.9.9-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# Install only essential compilers.
-# Added 'python3-minimal' to save space over the full python3 package.
+COPY --from=deps /root/.m2 /root/.m2
+COPY pom.xml .
+COPY src ./src
+
+RUN --mount=type=cache,target=/root/.m2 \
+    mvn -B -T 1C clean package -DskipTests
+
+# Extract Spring Boot layers for better caching
+RUN java -Djarmode=layertools -jar /app/target/*.jar extract
+
+# ---------- STAGE 3 : RUNTIME ----------
+FROM eclipse-temurin:17-jre-jammy
+WORKDIR /app
+ENV PORT=8080
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    g++ \
     gcc \
+    g++ \
     python3-minimal \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy the jar from build stage
-COPY --from=build /app/target/*.jar app.jar
+RUN useradd -m -u 10001 runner
 
-# Create a non-root user (Security Best Practice)
-RUN useradd -m runner
+COPY --from=build /app/dependencies/ ./
+COPY --from=build /app/spring-boot-loader/ ./
+COPY --from=build /app/snapshot-dependencies/ ./
+COPY --from=build /app/application/ ./
+
 USER runner
-
 EXPOSE 8080
 
-# Optimization for 512MB RAM:
-# 1. Use SerialGC to save memory overhead (better for small containers).
-# 2. Xmx limit to ensure the OS and compilers have room to breathe.
-ENTRYPOINT ["java", \
-            "-XX:+UseSerialGC", \
-            "-Xmx300m", \
-            "-XX:+UseContainerSupport", \
-            "-jar", "app.jar"]
+ENTRYPOINT ["java", "-XX:+UseSerialGC", "-XX:+UseContainerSupport", "-Xmx300m", "org.springframework.boot.loader.launch.JarLauncher"]
