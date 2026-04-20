@@ -26,7 +26,7 @@ public class NotificationController {
 
     public SseEmitter subscribe(@PathVariable Long userId)
     {
-        SseEmitter sseEmitter=new SseEmitter(Long.MAX_VALUE);
+        SseEmitter sseEmitter=new SseEmitter(60000L);
 
         userEmitters.put(userId,sseEmitter);
 

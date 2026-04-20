@@ -57,7 +57,7 @@ public class ResetPasswordService {
 
         if(user==null)
         {
-            return email;
+            return "User not found for this mail";
         }
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
