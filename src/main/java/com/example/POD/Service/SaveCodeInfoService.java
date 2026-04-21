@@ -1,12 +1,15 @@
 package com.example.POD.Service;
 
+import com.example.POD.Entity.CodeSaveEntity;
 import com.example.POD.Entity.ProblemStatement;
 import com.example.POD.Entity.StudentsCodeReport;
 import com.example.POD.Entity.UserEntity;
+import com.example.POD.Repository.CodeRepository;
 import com.example.POD.Repository.ProblemStatementRepo;
 import com.example.POD.Repository.SaveCodeResponseRepo;
 import com.example.POD.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -18,6 +21,7 @@ public class SaveCodeInfoService {
     private final SaveCodeResponseRepo repo;
     private final UserRepository userRepository;
     private final ProblemStatementRepo problemRepository;
+    private final CodeRepository codeRepository;
 
     public String addStudentResponse(StudentsCodeReport studentsCodeReport, Long userId, Long problemId) {
 
@@ -51,4 +55,39 @@ public class SaveCodeInfoService {
 
         return existingReport.isPresent() ? "Response updated successfully!" : "Information saved successfully!"+ tmpM;
     }
+
+
+    public ResponseEntity<CodeSaveEntity> savingActualCode(Long userId, Long problemId, String code)
+    {
+        CodeSaveEntity codeData=new CodeSaveEntity();
+
+        Long alreadyId=codeRepository.findIdByUserAndProblem(userId, problemId);
+        if(alreadyId!=null)
+        {
+            codeData.setId(alreadyId);
+        }
+
+        UserEntity user=userRepository.findByuserid(userId);
+        if(user!=null)
+        {
+            codeData.setUser(user);
+        }
+
+        ProblemStatement problemStatement =
+                problemRepository.findById(problemId)
+                        .orElseThrow(() -> new RuntimeException("Problem not found"));
+
+        if(problemStatement!=null)
+        {
+            codeData.setProblem(problemStatement);
+        }
+
+        codeData.setCode(code);
+
+       CodeSaveEntity savedCode= codeRepository.save(codeData);
+
+        return ResponseEntity.ok(savedCode);
+
+    }
+
 }

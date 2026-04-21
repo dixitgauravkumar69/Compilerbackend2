@@ -1,10 +1,13 @@
 package com.example.POD.Controller.StudentController;
 
+import com.example.POD.DTO.codeSaveDTO;
+import com.example.POD.Entity.CodeSaveEntity;
 import com.example.POD.Entity.StudentsCodeReport;
 import com.example.POD.Service.EmailService;
 import com.example.POD.Service.SaveCodeInfoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -39,6 +42,13 @@ public class SaveCodeData {
         }
 
         return response;
+    }
+
+
+    @PostMapping("/saveStudentCode/{userId}/{problemId}")
+    public ResponseEntity<CodeSaveEntity> saveActualCode(@PathVariable Long userId, @PathVariable Long problemId, @RequestBody codeSaveDTO code)
+    {
+       return saveCodeInfoService.savingActualCode(userId,problemId,code.getCode());
     }
 }
 

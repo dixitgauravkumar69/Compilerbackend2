@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
             String storedOtp = (String) redisTemplate.opsForValue().get(email);
 
             System.out.println("Stored Otp is :"+ storedOtp);
+
             if (storedOtp == null) {
                 return false; // expired or not exist
             }
