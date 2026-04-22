@@ -7,6 +7,7 @@ import com.example.POD.Service.EmailService;
 import com.example.POD.Service.SaveCodeInfoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,6 +46,7 @@ public class SaveCodeData {
     }
 
 
+    @CacheEvict(value = "SimilarCodeInfo", key = "#userId")
     @PostMapping("/saveStudentCode/{userId}/{problemId}")
     public ResponseEntity<CodeSaveEntity> saveActualCode(@PathVariable Long userId, @PathVariable Long problemId, @RequestBody codeSaveDTO code)
     {

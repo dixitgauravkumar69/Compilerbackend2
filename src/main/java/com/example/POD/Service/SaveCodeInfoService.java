@@ -1,6 +1,7 @@
 package com.example.POD.Service;
 
 import com.example.POD.DTO.GetCodeWithUserDTO;
+import com.example.POD.DTO.GettingCodeSimilarityResponse;
 import com.example.POD.DTO.SimilarCodePercentageDTO;
 import com.example.POD.Entity.CodeSaveEntity;
 import com.example.POD.Entity.ProblemStatement;
@@ -10,6 +11,7 @@ import com.example.POD.Repository.CodeRepository;
 import com.example.POD.Repository.ProblemStatementRepo;
 import com.example.POD.Repository.SaveCodeResponseRepo;
 import com.example.POD.Repository.UserRepository;
+import jakarta.persistence.Cacheable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -195,5 +197,83 @@ public class SaveCodeInfoService {
             }
         }
         return dp[a.size()][b.size()];
+    }
+
+
+
+
+
+    public List<GettingCodeSimilarityResponse>getSimilarityCodeWithUser(Long userId,Long problemId)
+    {
+       String studentName=userRepository.findUsernameByUserid(userId);
+
+        List<GettingCodeSimilarityResponse>Response=new ArrayList<>();
+        List<String>similarityCodeResponseList=new ArrayList<>();
+
+
+        CodeSaveEntity similarityInfos=codeRepository.findByUserAndProblem(userId,problemId);
+
+        for(String similarityInfo:similarityInfos.getSimilarity())
+        {
+            similarityCodeResponseList.add(similarityInfo);
+        }
+
+        //List a gyi jisme string hai similarity vali ab isse Similarity percentage and similar with ka calculation kr lunga
+        for (String item : similarityCodeResponseList) {
+
+
+            GettingCodeSimilarityResponse similarityResponse=new GettingCodeSimilarityResponse();
+
+            // ":" ke baad wala part
+            String valuePart = item.split(":")[1].trim();
+
+            // "with" ke basis pe split
+            String[] parts = valuePart.split("with");
+
+            int percentage = Integer.parseInt(parts[0]);
+            long similarId = Long.parseLong(parts[1]);
+
+            System.out.println("Percentage: " + percentage);
+            System.out.println("Similar ID: " + similarId);
+
+
+
+
+                similarityResponse.setSimilarWith(similarId);
+                similarityResponse.setSimialrityPercentage(percentage);
+                similarityResponse.setStudentName(studentName);
+
+                //Check student's similarity score
+            //1. if score less than 70% --> good
+            //2. if score less than 50% --> better
+            //3. if score less than 30%--> best
+
+          if(percentage<70)
+          {
+              similarityResponse.setRemark("Good");
+          }
+          else if(percentage<=50)
+          {
+              similarityResponse.setRemark("Better");
+          }
+         else if(percentage<=30)
+          {
+              similarityResponse.setRemark("Best");
+          }
+         else if((percentage>70) &&(percentage<85))
+          {
+              similarityResponse.setRemark("Partial match");
+          }
+         else
+          {
+              similarityResponse.setRemark("Fully matched");
+          }
+
+
+        Response.add(similarityResponse);
+        }
+
+
+        return Response;
     }
 }
