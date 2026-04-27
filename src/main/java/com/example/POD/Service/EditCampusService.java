@@ -5,10 +5,7 @@ import com.example.POD.Entity.CampusEntity;
 import com.example.POD.Repository.CampusRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 
 @Service

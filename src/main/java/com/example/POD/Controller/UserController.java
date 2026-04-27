@@ -22,11 +22,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -102,15 +104,37 @@ public class UserController {
             if (user == null) {
                 return ResponseEntity.status(404).body("User Not Found");
             }
-        
+
+
             if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
                 return ResponseEntity.status(401).body("Password null of db");
             }
 
-//             String encodedPassword=passwordEncoder.encode(userLoginDTO.getPassword());
             if (!passwordEncoder.matches(userLoginDTO.getPassword(), user.getPassword())) {
                 return ResponseEntity.status(401).body("Invalid Email or Password");
             }
+
+            if (user.getStatus() != null &&
+                    "DEACTIVATE".equalsIgnoreCase(user.getStatus().trim())) {
+
+                return ResponseEntity.status(403).body(
+                        Map.of("message", "Contact to admin YOU ARE BLOCKED IN THIS SYSTEM")
+                );
+            }
+
+
+            if(("TEACHER".equals(user.getUserRole())) && (Boolean.FALSE.equals(user.getIsApproved())))
+            {
+                return ResponseEntity.status(403).body("Your request is not authorized by ADMIN");
+            }
+
+
+
+
+
+
+//             String encodedPassword=passwordEncoder.encode(userLoginDTO.getPassword());
+
 
             // Authenticate manually (since we already validated)
             // Safety check for role to avoid "Cannot pass null or empty values" error
@@ -172,4 +196,17 @@ public class UserController {
         UserEntity user=userRepo.findByUserEmail(email);
         return user;
     }
+
+
+
+
+    //For first time creation of Admin
+
+    @PostMapping("/createAdmin")
+    public UserEntity createAdmin(@RequestBody UserDTO user)
+    {
+       UserEntity createdUser=userService.addUser(user);
+       return createdUser;
+    }
+
 }

@@ -1,8 +1,6 @@
 package com.example.POD.Controller;
 
 import com.example.POD.DTO.ResetPasswordDTO;
-import com.example.POD.Entity.UserEntity;
-import com.example.POD.Repository.UserRepository;
 import com.example.POD.Service.ForgetPasswordService;
 import com.example.POD.Service.ResetPasswordService;
 import jakarta.servlet.http.HttpServletRequest;

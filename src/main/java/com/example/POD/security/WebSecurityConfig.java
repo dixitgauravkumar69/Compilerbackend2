@@ -89,9 +89,11 @@ public class WebSecurityConfig {
                         .requestMatchers(
                                 "/api/User/login",
                                 "/api/User/addUser",
+                                "/api/User/createAdmin",
                                 "/api/User/verifyOtpAndRegister",
                              "/api/User/forget/password/**",
                              "/api/User/reset-password",
+                             "/api/User/addAudit/**",
                              "/sse/**").permitAll()
 
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")

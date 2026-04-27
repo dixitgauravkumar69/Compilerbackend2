@@ -1,10 +1,9 @@
 package com.example.POD.Entity;
 
 
-import com.example.POD.DTO.SimilarCodePercentageDTO;
+import com.example.POD.Entity.ProblemStatement;
+import com.example.POD.Entity.UserEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 

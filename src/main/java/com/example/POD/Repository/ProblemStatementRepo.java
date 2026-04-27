@@ -1,5 +1,6 @@
 package com.example.POD.Repository;
 
+import com.example.POD.DTO.ProblemStatementListDTO;
 import com.example.POD.Entity.ProblemStatement;
 import org.springframework.data.domain.Page;
 import org.springframework.cache.annotation.Cacheable;
@@ -34,6 +35,6 @@ public interface ProblemStatementRepo extends JpaRepository <ProblemStatement,Lo
     Page<ProblemStatement> findActiveAssignedProblems(Pageable pageable);
 
     @Query("SELECT p FROM ProblemStatement p WHERE p.assigned = true ")
-    org.springframework.data.domain.Slice<com.example.POD.DTO.ProblemStatementListDTO> findActiveAssignedProblemsOptimized(Pageable pageable);
+    org.springframework.data.domain.Slice<ProblemStatementListDTO> findActiveAssignedProblemsOptimized(Pageable pageable);
 }
 

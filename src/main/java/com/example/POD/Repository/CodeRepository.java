@@ -1,9 +1,6 @@
 package com.example.POD.Repository;
 
-import com.example.POD.DTO.CodeDTO;
-import com.example.POD.DTO.GetCodeWithUserDTO;
 import com.example.POD.Entity.CodeSaveEntity;
-import org.aspectj.apache.bcel.classfile.Code;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

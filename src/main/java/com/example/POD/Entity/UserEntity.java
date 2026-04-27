@@ -9,6 +9,7 @@ import java.io.Serializable;
 
 @Getter
 @Setter
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -34,4 +35,10 @@ public class UserEntity implements Serializable {
    
    @Column(name="Password",nullable=false)
     private String password;
+
+   @Column(name="isApproved")
+    private Boolean isApproved;
+
+    @Column(name="status")
+    private String status = "ACTIVE";
 }

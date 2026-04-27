@@ -25,6 +25,10 @@ public class ResetPasswordService {
     {
        String email=redisTemplate.opsForValue().get(token);
 
+        if (email == null || email.equals("null") || email.isEmpty()) {
+            return "Token expired";
+        }
+
         if(email != null){
             email = email.replace("\"", "").trim();
         }
@@ -33,10 +37,8 @@ public class ResetPasswordService {
         System.out.println(email.length());
 
 
-       if(email==null)
-       {
-           return "Token expire";
-       }
+
+
 
       String updatedPassword =resetPassword(email,newPassword);
 

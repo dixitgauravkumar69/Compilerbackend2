@@ -1,5 +1,6 @@
 package com.example.POD.Entity;
 
+import com.example.POD.Entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

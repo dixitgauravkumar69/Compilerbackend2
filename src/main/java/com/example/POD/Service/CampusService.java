@@ -2,7 +2,6 @@ package com.example.POD.Service;
 
 import com.example.POD.Entity.CampusEntity;
 import com.example.POD.Repository.CampusRepository;
-import com.example.POD.Repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

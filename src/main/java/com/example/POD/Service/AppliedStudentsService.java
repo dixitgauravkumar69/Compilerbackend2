@@ -8,7 +8,6 @@ import com.example.POD.Repository.NotificationRepository;
 import com.example.POD.Repository.PlacementApplicationRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

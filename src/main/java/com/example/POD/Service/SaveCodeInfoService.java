@@ -1,6 +1,5 @@
 package com.example.POD.Service;
 
-import com.example.POD.DTO.GetCodeWithUserDTO;
 import com.example.POD.DTO.GettingCodeSimilarityResponse;
 import com.example.POD.DTO.SimilarCodePercentageDTO;
 import com.example.POD.Entity.CodeSaveEntity;
@@ -11,13 +10,10 @@ import com.example.POD.Repository.CodeRepository;
 import com.example.POD.Repository.ProblemStatementRepo;
 import com.example.POD.Repository.SaveCodeResponseRepo;
 import com.example.POD.Repository.UserRepository;
-import jakarta.persistence.Cacheable;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

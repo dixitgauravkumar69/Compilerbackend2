@@ -1,5 +1,6 @@
 package com.example.POD.Entity;
 
+import com.example.POD.Entity.ProblemStatement;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

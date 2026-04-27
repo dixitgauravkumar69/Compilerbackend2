@@ -5,7 +5,6 @@ import com.example.POD.Entity.UserEntity;
 import com.example.POD.Repository.CampusRepository;
 import com.example.POD.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
