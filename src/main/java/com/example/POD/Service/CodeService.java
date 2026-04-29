@@ -25,6 +25,7 @@ public class CodeService {
     private final TestCaseRepo testCaseRepository;
 
     public ResponseCodeExecution runWithTestCases(String code, Languages language, Long problemId) throws Exception {
+
         ResponseCodeExecution response = new ResponseCodeExecution();
 
         String uniqueId = UUID.randomUUID().toString();
@@ -36,13 +37,17 @@ public class CodeService {
         String executableName = "program";
 
         File codeFile = getFile(code, workingDir, fileName);
+
         List<String> resultList = new ArrayList<>();
         int passCount = 0;
 
         try {
-            // --- Compilation Phase ---
+
+            // ================= COMPILATION =================
             if (language.getCompileCommand() != null) {
+
                 ProcessBuilder cb;
+
                 if (language.name().equalsIgnoreCase("CPP")) {
                     cb = new ProcessBuilder("g++", fileName, "-o", executableName);
                 } else if (language.name().equalsIgnoreCase("JAVA")) {
@@ -53,6 +58,7 @@ public class CodeService {
 
                 cb.directory(new File(workingDir));
                 Process compile = cb.start();
+
                 String compileError = readStream(compile.getErrorStream());
                 compile.waitFor();
 
@@ -64,54 +70,25 @@ public class CodeService {
                 }
 
                 if (language.name().equalsIgnoreCase("CPP")) {
-                    new ProcessBuilder("chmod", "+x", workingDir + "/" + executableName).start().waitFor();
+                    new ProcessBuilder("chmod", "+x", workingDir + "/" + executableName)
+                            .start().waitFor();
                 }
             }
 
-            // --- Complexity Analysis Phase in which we can calculate complexity of code ---
-
-//            String complexityResult = "O(n)";
-//            try {
-//                String scriptPath;
-//                File renderScript = new File("/app/analyzer.py");
-//                if (renderScript.exists()) {
-//                    scriptPath = "/app/analyzer.py";
-//                } else {
-//                    scriptPath = new File("src/main/resources/analyzer.py").getAbsolutePath();
-//                }
-//
-//                ProcessBuilder apb = new ProcessBuilder("python3", scriptPath, workingDir + "/" + fileName, language.name());
-//                apb.directory(new File(workingDir));
-//                Process ap = apb.start();
-//
-//                try (BufferedReader reader = new BufferedReader(new InputStreamReader(ap.getInputStream()))) {
-//                    String line = reader.readLine();
-//                    if (line != null && !line.isEmpty()) {
-//                        complexityResult = line.trim();
-//                    }
-//                }
-//                ap.waitFor();
-//            } catch (Exception e) {
-//                System.out.println("Complexity Error: " + e.getMessage());
-//            }
-//            response.setComplexity(complexityResult);
-//
-
-
-
-
-
-            // --- Fetch Testcases ---
+            // ================= FETCH TEST CASES =================
             List<TestCaseEntity> testCases = testCaseRepository.getTestCasesByProblemId(problemId);
+
             if (testCases.isEmpty()) {
                 resultList.add("No testcases found");
                 response.setTestCases(resultList);
                 return response;
             }
 
-            // --- Execution Phase ---
+            // ================= EXECUTION =================
             for (int i = 0; i < testCases.size(); i++) {
+
                 TestCaseEntity tc = testCases.get(i);
+
                 ProcessBuilder rb;
 
                 if (language.name().equalsIgnoreCase("PYTHON")) {
@@ -127,13 +104,21 @@ public class CodeService {
                 rb.directory(new File(workingDir));
                 Process run = rb.start();
 
-                try (BufferedWriter inputWriter = new BufferedWriter(
-                        new OutputStreamWriter(run.getOutputStream(), StandardCharsets.UTF_8))) {
-                    inputWriter.write(tc.getInputData());
-                    inputWriter.flush();
-                }
+                // ================= SMART INPUT HANDLING =================
+                String input = normalizeInput(tc.getInputData());
 
+                BufferedWriter inputWriter = new BufferedWriter(
+                        new OutputStreamWriter(run.getOutputStream(), StandardCharsets.UTF_8)
+                );
+
+                inputWriter.write(input);
+                inputWriter.newLine();
+                inputWriter.flush();
+                inputWriter.close();
+
+                // ================= TIMEOUT =================
                 boolean finished = run.waitFor(5, TimeUnit.SECONDS);
+
                 if (!finished) {
                     run.destroyForcibly();
                     resultList.add("Test Case " + (i + 1) + ": TLE");
@@ -148,8 +133,25 @@ public class CodeService {
                     continue;
                 }
 
-                String expected = tc.getExpectedOutput().trim().replaceAll("\\s+", " ");
-                String actual = actualOutput.replaceAll("\\s+", " ");
+                if (runtimeError.contains("NoSuchElementException")) {
+                    resultList.add("Test Case " + (i + 1) + ": Invalid Input (Insufficient data)");
+                    continue;
+                }
+
+                // ================= OUTPUT NORMALIZATION =================
+                String expected = tc.getExpectedOutput()
+                        .replaceAll("[\\[\\],]", " ")   // remove [, ]
+                        .trim()
+                        .replaceAll("\\s+", " ");
+
+                String actual = actualOutput
+                        .replaceAll("[\\[\\],]", " ")   // handle if user prints array
+                        .trim()
+                        .replaceAll("\\s+", " ");
+
+
+                System.out.println("Expected output: "+ expected);
+                System.out.println("Actual output: "+ actualOutput);
 
                 if (expected.equals(actual)) {
                     passCount++;
@@ -191,5 +193,27 @@ public class CodeService {
             }
         }
         return sb.toString();
+    }
+    private String normalizeInput(String input) {
+
+        if (input == null || input.isEmpty()) return "";
+
+        // Remove brackets safely
+        input = input.replaceAll("\\[", "")
+                .replaceAll("]", "");
+
+        // Replace commas with space
+        input = input.replaceAll(",", " ");
+
+        // Remove extra spaces but KEEP new lines
+        StringBuilder cleaned = new StringBuilder();
+        String[] lines = input.split("\\n");
+
+        for (String line : lines) {
+            cleaned.append(line.trim().replaceAll("\\s+", " "))
+                    .append("\n");
+        }
+
+        return cleaned.toString().trim();
     }
 }

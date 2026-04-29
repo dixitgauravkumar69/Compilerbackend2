@@ -24,6 +24,7 @@ public class AuditService {
         {
             return "User Not found";
         }
+
          auditEntity.setUpdatedBy(Audited_By.getUserid());
 
         UserEntity audited_To=user.findByuserid(auditTo);
@@ -32,6 +33,8 @@ public class AuditService {
         {
             return "Auditing user not found";
         }
+
+
         auditEntity.setUserId(auditTo);
 
         auditEntity.setReason(auditInfo.getReason());

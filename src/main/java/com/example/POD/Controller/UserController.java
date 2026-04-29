@@ -181,13 +181,15 @@ public class UserController {
     }
 
 
-    @GetMapping("/getProblemStatements")
-    public List<ProblemStatement> getProblemStatements()
+    @GetMapping("/getProblemStatements/{includeTestCase}")
+    public List<ProblemStatement> getProblemStatements(@PathVariable boolean includeTestCase)
     {
-      List< ProblemStatement>  ps= userService.getProblemStatements();
+      List< ProblemStatement>  ps= userService.getProblemStatements(includeTestCase);
 
        return ps;
     }
+
+
 
     @Cacheable(value = "profileEndpointCache")
     @GetMapping("/profile")

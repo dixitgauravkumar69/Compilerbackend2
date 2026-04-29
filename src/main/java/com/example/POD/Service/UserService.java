@@ -3,14 +3,8 @@ package com.example.POD.Service;
 import com.example.POD.Controller.NotificationController;
 import com.example.POD.DTO.UserDTO;
 import com.example.POD.DTO.UserLoginDTO;
-import com.example.POD.Entity.NotificationEntity;
-import com.example.POD.Entity.ProblemStatement;
-import com.example.POD.Entity.Profile;
-import com.example.POD.Entity.UserEntity;
-import com.example.POD.Repository.NotificationRepository;
-import com.example.POD.Repository.ProblemStatementRepo;
-import com.example.POD.Repository.ProfileRepository;
-import com.example.POD.Repository.UserRepository;
+import com.example.POD.Entity.*;
+import com.example.POD.Repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
@@ -22,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -37,7 +32,7 @@ public class UserService {
     private final CacheManager cacheManager;
     private final NotificationController notificationController;
     private final NotificationRepository notificationRepository;
-
+    private final TestCaseRepo testCaseRepo;
 
     @Caching(evict = {
         @CacheEvict(value = "usersCache", key = "#user.userEmail"),
@@ -88,9 +83,37 @@ public class UserService {
 
 
     @PreAuthorize("hasRole('TEACHER')")
-    public List<ProblemStatement> getProblemStatements() {
-        return problemStatementRepo.findAll(Sort.by(Sort.Direction.DESC, "id"));
+    public List<ProblemStatement> getProblemStatements(boolean includeWithoutTestcase) {
+        List<ProblemStatement>ProblemsForUser=new ArrayList<>();
+        List<ProblemStatement> allProblems=problemStatementRepo.findAll();
+
+        if(includeWithoutTestcase==true)
+        {
+            return allProblems;
+        }
+
+        for(ProblemStatement oneProblem:allProblems)
+        {
+            List<TestCaseEntity> testcases=testCaseRepo.getTestCasesByProblemId(oneProblem.getId());
+           if(testcases.size()==0)
+           {
+               System.out.println("Sorry ye problem add nhi krunga test case nhi hai");
+           }
+           else
+           {
+               ProblemsForUser.add(oneProblem);
+           }
+
+
+//            System.out.println(testcases);
+        }
+
+        ProblemsForUser.sort((a, b) -> b.getId().compareTo(a.getId()));
+        return ProblemsForUser;
     }
+
+
+
 
     @CacheEvict(value = {"allProblemStatementsCache", "assignedProblemsQuery"}, allEntries = true)
     public String assignProblemStatement(Long problemId) {
