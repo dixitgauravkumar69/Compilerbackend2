@@ -94,6 +94,7 @@ public class WebSecurityConfig {
                              "/api/User/forget/password/**",
                              "/api/User/reset-password",
                              "/api/User/addAudit/**",
+                             "/api/User/request-reply",
                              "/sse/**").permitAll()
 
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
