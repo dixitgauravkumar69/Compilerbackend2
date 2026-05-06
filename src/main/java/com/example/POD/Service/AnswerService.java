@@ -16,9 +16,9 @@ public class AnswerService {
     private final ProjectInfoRepo projectInfoRepo;
     private final GetEmbeding getEmbeding;
 
-    public List<AnswerDTO> requestResponse(String question)
+    public AnswerDTO requestResponse(String question)
     {
-        List<AnswerDTO>answers=new ArrayList<>();
+
         //Generating embedding of question
 
         float[]embedded_question= getEmbeding.callPythonAPI(question);
@@ -27,23 +27,42 @@ public class AnswerService {
 
         List<ProjectInfoEntity> allEmbeddings=projectInfoRepo.findAll();
 
+        //debugging line..................................
+
+        System.out.println("All data is following---------");
+
+
+       for(ProjectInfoEntity Embd:allEmbeddings)
+       {
+           System.out.println("Embeddings Size:"+ allEmbeddings.size());
+           System.out.println(Embd.getTitle());
+
+       }
 
         for(ProjectInfoEntity Embedding:allEmbeddings)
         {
+
+
             AnswerDTO answer=new AnswerDTO();
             double similarity_score=similarityCount(Embedding.getEmbedding(),embedded_question);
-            if(similarity_score>0.65)
+
+            System.out.println("Similarity Score: "+similarity_score);
+
+            if(similarity_score>0.76)
             {
                 answer.setQuestion(question);
                 answer.setAnswer(Embedding.getContent());
-                answers.add(answer);
+                return answer;
             }
 
 
         }
 
+        AnswerDTO ans=new AnswerDTO();
+        ans.setQuestion(question);
+        ans.setAnswer("Please contact with admin");
+        return ans;
 
-        return answers;
     }
     public  double similarityCount(float[] vecA, float[] vecB) {
 

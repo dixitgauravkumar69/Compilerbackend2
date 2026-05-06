@@ -16,7 +16,7 @@ import java.util.List;
 public class QuestionAndAnsController {
     private final AnswerService answerService;
     @PostMapping("/request-reply")
-    public List<AnswerDTO> requestReply(@RequestBody String question)
+    public AnswerDTO requestReply(@RequestBody String question)
     {
         return answerService.requestResponse(question);
     }

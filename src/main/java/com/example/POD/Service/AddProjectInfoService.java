@@ -21,7 +21,7 @@ public class AddProjectInfoService {
         projectInfoData.setTitle(title);
         projectInfoData.setContent(content);
 
-        String fullData=content.concat(title);
+        String fullData=title;
 
         //Genereate embadding of title+content this will save in db
 
