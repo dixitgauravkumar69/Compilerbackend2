@@ -98,6 +98,7 @@ public class UserService {
            if(testcases.size()==0)
            {
                System.out.println("Sorry ye problem add nhi krunga test case nhi hai");
+               continue;
            }
            else
            {
@@ -121,6 +122,12 @@ public class UserService {
                 .findById(problemId)
                 .orElseThrow(() -> new RuntimeException("Problem not found"));
 
+        List<TestCaseEntity> testcases=testCaseRepo.getTestCasesByProblemId(problemId);
+
+        if(testcases.isEmpty())
+        {
+            return "Can't assign please add test cases";
+        }
         problem.setAssigned(true);
 
         problemStatementRepo.save(problem);
