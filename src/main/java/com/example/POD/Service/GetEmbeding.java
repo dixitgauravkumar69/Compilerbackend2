@@ -13,9 +13,7 @@ public class GetEmbeding {
 
     public float[] callPythonAPI(String text) {
 
-        String url ="https://embedding-generation-2.onrender.com/embedding";
-
-        RestTemplate restTemplate = new RestTemplate();
+        String url = "https://embedding-generation-2.onrender.com/embedding";
 
         Map<String, String> body = new HashMap<>();
         body.put("text", text);
@@ -26,9 +24,13 @@ public class GetEmbeding {
         HttpEntity<Map<String, String>> request =
                 new HttpEntity<>(body, headers);
 
-        //   list response
+        // API response as object
+        Map<String, Object> response =
+                restTemplate.postForObject(url, request, Map.class);
+
+        // extract embedding array
         List<Number> values =
-                restTemplate.postForObject(url, request, List.class);
+                (List<Number>) response.get("embedding");
 
         float[] vector = new float[values.size()];
 

@@ -110,6 +110,9 @@ public class EmailService {
     @Async
     public void sendResetLinkToUser(String email,String resetLink)
     {
+        System.out.println(email);
+        System.out.println(resetLink);
+
         try {
 
 

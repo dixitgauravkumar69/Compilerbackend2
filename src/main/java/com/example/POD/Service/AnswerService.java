@@ -6,68 +6,118 @@ import com.example.POD.Repository.ProjectInfoRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-
 public class AnswerService {
+
     private final ProjectInfoRepo projectInfoRepo;
     private final GetEmbeding getEmbeding;
 
-    public AnswerDTO requestResponse(String question)
-    {
+    public AnswerDTO requestResponse(String question) {
 
-        //Generating embedding of question
+        // =========================
+        // Question Preprocessing
+        // =========================
+        question = question.toLowerCase().trim();
 
-        float[]embedded_question= getEmbeding.callPythonAPI(question);
+        // =========================
+        // Generate Question Embedding
+        // =========================
+        float[] embeddedQuestion = getEmbeding.callPythonAPI(question);
 
-        //Load all embeddings from projectInfo
+        // =========================
+        // Load All Stored Embeddings
+        // =========================
+        List<ProjectInfoEntity> allEmbeddings = projectInfoRepo.findAll();
 
-        List<ProjectInfoEntity> allEmbeddings=projectInfoRepo.findAll();
+        System.out.println("========== ALL EMBEDDINGS ==========");
 
-        //debugging line..................................
-
-        System.out.println("All data is following---------");
-
-
-       for(ProjectInfoEntity Embd:allEmbeddings)
-       {
-           System.out.println("Embeddings Size:"+ allEmbeddings.size());
-           System.out.println(Embd.getTitle());
-
-       }
-
-        for(ProjectInfoEntity Embedding:allEmbeddings)
-        {
-
-
-            AnswerDTO answer=new AnswerDTO();
-            double similarity_score=similarityCount(Embedding.getEmbedding(),embedded_question);
-
-            System.out.println("Similarity Score: "+similarity_score);
-
-            if(similarity_score>0.76)
-            {
-                answer.setQuestion(question);
-                answer.setAnswer(Embedding.getContent());
-                return answer;
-            }
-
-
+        for (ProjectInfoEntity entity : allEmbeddings) {
+            System.out.println("Title : " + entity.getTitle());
         }
 
-        AnswerDTO ans=new AnswerDTO();
-        ans.setQuestion(question);
-        ans.setAnswer("Please contact with admin");
-        return ans;
+        // =========================
+        // Best Match Variables
+        // =========================
+        double bestScore = -1;
+        ProjectInfoEntity bestMatch = null;
 
+        // =========================
+        // Find Highest Similarity
+        // =========================
+        for (ProjectInfoEntity entity : allEmbeddings) {
+
+            float[] storedEmbedding = entity.getEmbedding();
+
+            // Skip invalid embeddings
+            if (storedEmbedding == null ||
+                    storedEmbedding.length != embeddedQuestion.length) {
+
+                System.out.println("Invalid embedding found for: "
+                        + entity.getTitle());
+
+                continue;
+            }
+
+            double similarityScore =
+                    similarityCount(storedEmbedding, embeddedQuestion);
+
+            System.out.println("--------------------------------");
+            System.out.println("Title : " + entity.getTitle());
+            System.out.println("Similarity Score : " + similarityScore);
+
+            // Store best match
+            if (similarityScore > bestScore) {
+                bestScore = similarityScore;
+                bestMatch = entity;
+            }
+        }
+
+        // =========================
+        // Final Debugging
+        // =========================
+        System.out.println("================================");
+        System.out.println("BEST SCORE : " + bestScore);
+
+        if (bestMatch != null) {
+            System.out.println("BEST MATCH TITLE : "
+                    + bestMatch.getTitle());
+        }
+
+        // =========================
+        // Prepare Response
+        // =========================
+        AnswerDTO answer = new AnswerDTO();
+        answer.setQuestion(question);
+
+        // Threshold
+        double THRESHOLD = 0.80;
+
+        if (bestScore >= THRESHOLD && bestMatch != null) {
+
+            answer.setAnswer(bestMatch.getContent());
+
+        } else {
+
+            answer.setAnswer("Please contact with admin");
+        }
+
+        return answer;
     }
-    public  double similarityCount(float[] vecA, float[] vecB) {
 
-        if (vecA == null || vecB == null || vecA.length != vecB.length) {
-            throw new IllegalArgumentException("Vectors must be non-null and same length");
+    // =====================================
+    // COSINE SIMILARITY FUNCTION
+    // =====================================
+    public double similarityCount(float[] vecA, float[] vecB) {
+
+        if (vecA == null || vecB == null ||
+                vecA.length != vecB.length) {
+
+            throw new IllegalArgumentException(
+                    "Vectors must be non-null and same length"
+            );
         }
 
         double dotProduct = 0.0;
@@ -75,15 +125,20 @@ public class AnswerService {
         double normB = 0.0;
 
         for (int i = 0; i < vecA.length; i++) {
+
             dotProduct += vecA[i] * vecB[i];
-            normA += vecA[i] * vecA[i];
-            normB += vecB[i] * vecB[i];
+
+            normA += Math.pow(vecA[i], 2);
+
+            normB += Math.pow(vecB[i], 2);
         }
 
+        // Prevent divide by zero
         if (normA == 0 || normB == 0) {
             return 0.0;
         }
 
-        return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+        return dotProduct /
+                (Math.sqrt(normA) * Math.sqrt(normB));
     }
 }
